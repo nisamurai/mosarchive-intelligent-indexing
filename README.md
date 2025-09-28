@@ -5,6 +5,7 @@
 ## Технологии
 
 - **Frontend**: React 19 + TypeScript
+- **Backend**: Python
 - **Сборщик**: Vite
 - **Стили**: Tailwind CSS
 - **Иконки**: Lucide React
