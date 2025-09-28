@@ -7,8 +7,10 @@ interface FileWithProgress {
   file: File;
   id: string;
   progress: number;
-  status: 'pending' | 'uploading' | 'completed' | 'error';
+  status: 'pending' | 'uploading' | 'processing' | 'completed' | 'error';
   error?: string;
+  processingStep?: string;
+  processingLog?: string[];
 }
 
 // Пропсы компонента
@@ -129,6 +131,57 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
     setFiles(prev => prev.filter(f => f.id !== fileId));
   }, []);
 
+  // Симуляция обработки изображения
+  const simulateImageProcessing = async (fileId: string) => {
+    const processingSteps = [
+      'Коррекция перспективы документа...',
+      'Выполняется выравнивание изображения...',
+      'Повышаем контрастность изображения...',
+      'Удаляем шум с изображения...',
+      'Выполняется бинаризация изображения...',
+      'Улучшаем разрешение изображения...'
+    ];
+
+    // Обновляем статус на "обработка"
+    setFiles(prev => prev.map(f => 
+      f.id === fileId ? { 
+        ...f, 
+        status: 'processing' as const,
+        processingLog: [],
+        progress: 0
+      } : f
+    ));
+
+    // Симулируем каждый этап обработки
+    for (let i = 0; i < processingSteps.length; i++) {
+      const step = processingSteps[i];
+      const progress = Math.round(((i + 1) / processingSteps.length) * 100);
+      
+      // Обновляем текущий этап и прогресс
+      setFiles(prev => prev.map(f => 
+        f.id === fileId ? { 
+          ...f, 
+          processingStep: step,
+          progress,
+          processingLog: [...(f.processingLog || []), `[${i + 1}/${processingSteps.length}] ${step}`]
+        } : f
+      ));
+
+      // Задержка для демонстрации
+      await new Promise(resolve => setTimeout(resolve, 800));
+    }
+
+    // Завершаем обработку
+    setFiles(prev => prev.map(f => 
+      f.id === fileId ? { 
+        ...f, 
+        status: 'completed' as const,
+        progress: 100,
+        processingStep: 'Обработка завершена!'
+      } : f
+    ));
+  };
+
   // Обработчик загрузки файлов
   const handleUpload = useCallback(async () => {
     if (files.length === 0) return;
@@ -144,13 +197,19 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Обновляем прогресс файла
+        // Обновляем прогресс загрузки
         setFiles(prev => prev.map(f => 
-          f.id === file.id ? { ...f, progress: 100, status: 'completed' as const } : f
+          f.id === file.id ? { ...f, progress: 100 } : f
         ));
 
-        // Небольшая задержка для демонстрации прогресса
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Небольшая задержка для демонстрации загрузки
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      // Начинаем обработку изображений
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        await simulateImageProcessing(file.id);
       }
 
       // Вызываем callback с загруженными файлами
@@ -282,14 +341,14 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
                     {fileWithProgress.status === 'error' && (
                       <AlertCircle className="w-5 h-5 text-red-500" />
                     )}
-                    {fileWithProgress.status === 'uploading' && (
+                    {(fileWithProgress.status === 'uploading' || fileWithProgress.status === 'processing') && (
                       <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                     )}
                   </div>
                 </div>
 
                 {/* Кнопка удаления */}
-                {!isUploading && (
+                {!isUploading && fileWithProgress.status !== 'processing' && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -310,7 +369,7 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
           {isUploading && (
             <div className="mt-4">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>Загрузка файлов...</span>
+                <span>Обработка файлов...</span>
                 <span>
                   {files.filter(f => f.status === 'completed').length} / {files.length}
                 </span>
@@ -323,6 +382,53 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
                   }}
                 />
               </div>
+            </div>
+          )}
+
+          {/* Детальная информация об обработке */}
+          {files.some(f => f.status === 'processing' || f.processingStep) && (
+            <div className="mt-4 space-y-3">
+              <h4 className="text-sm font-medium text-gray-900">Детали обработки:</h4>
+              {files.map((fileWithProgress) => (
+                fileWithProgress.status === 'processing' && (
+                  <div key={fileWithProgress.id} className="p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-blue-900">
+                        {fileWithProgress.file.name}
+                      </span>
+                      <span className="text-xs text-blue-600">
+                        {fileWithProgress.progress}%
+                      </span>
+                    </div>
+                    
+                    {/* Прогресс-бар для отдельного файла */}
+                    <div className="w-full bg-blue-200 rounded-full h-1.5 mb-2">
+                      <div
+                        className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                        style={{ width: `${fileWithProgress.progress}%` }}
+                      />
+                    </div>
+                    
+                    {/* Текущий этап */}
+                    {fileWithProgress.processingStep && (
+                      <p className="text-xs text-blue-700">
+                        {fileWithProgress.processingStep}
+                      </p>
+                    )}
+                    
+                    {/* Лог обработки */}
+                    {fileWithProgress.processingLog && fileWithProgress.processingLog.length > 0 && (
+                      <div className="mt-2 max-h-20 overflow-y-auto">
+                        {fileWithProgress.processingLog.map((logEntry, index) => (
+                          <p key={index} className="text-xs text-blue-600">
+                            {logEntry}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              ))}
             </div>
           )}
 
