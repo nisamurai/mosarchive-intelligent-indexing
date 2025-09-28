@@ -7,10 +7,12 @@ interface FileWithProgress {
   file: File;
   id: string;
   progress: number;
-  status: 'pending' | 'uploading' | 'processing' | 'completed' | 'error';
+  status: 'pending' | 'uploading' | 'processing' | 'text_recognition' | 'completed' | 'error';
   error?: string;
   processingStep?: string;
   processingLog?: string[];
+  recognizedText?: string;
+  textRecognitionProgress?: number;
 }
 
 // Пропсы компонента
@@ -155,7 +157,7 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
     // Симулируем каждый этап обработки
     for (let i = 0; i < processingSteps.length; i++) {
       const step = processingSteps[i];
-      const progress = Math.round(((i + 1) / processingSteps.length) * 100);
+      const progress = Math.round(((i + 1) / processingSteps.length) * 60); // 60% для обработки изображения
       
       // Обновляем текущий этап и прогресс
       setFiles(prev => prev.map(f => 
@@ -171,13 +173,77 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
       await new Promise(resolve => setTimeout(resolve, 800));
     }
 
+    // Переходим к распознаванию текста
+    await simulateTextRecognition(fileId);
+  };
+
+  // Симуляция распознавания текста
+  const simulateTextRecognition = async (fileId: string) => {
+    // Обновляем статус на "распознавание текста"
+    setFiles(prev => prev.map(f => 
+      f.id === fileId ? { 
+        ...f, 
+        status: 'text_recognition' as const,
+        processingStep: 'Идёт распознавание текста...',
+        textRecognitionProgress: 0
+      } : f
+    ));
+
+    // Симулируем этапы распознавания текста
+    const textRecognitionSteps = [
+      'Анализ структуры документа...',
+      'Определение областей с текстом...',
+      'Распознавание печатного текста...',
+      'Распознавание рукописного текста...',
+      'Постобработка результата...'
+    ];
+
+    for (let i = 0; i < textRecognitionSteps.length; i++) {
+      const step = textRecognitionSteps[i];
+      const progress = 60 + Math.round(((i + 1) / textRecognitionSteps.length) * 40); // 40% для распознавания текста
+      
+      setFiles(prev => prev.map(f => 
+        f.id === fileId ? { 
+          ...f, 
+          processingStep: step,
+          progress,
+          textRecognitionProgress: Math.round(((i + 1) / textRecognitionSteps.length) * 100),
+          processingLog: [...(f.processingLog || []), `[Текст] ${step}`]
+        } : f
+      ));
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+    }
+
+    // Генерируем пример распознанного текста
+    const recognizedText = `Пример распознанного текста из документа ${fileId}:
+
+ДОКУМЕНТ № 12345
+Дата: 15.03.2024
+
+ЗАЯВЛЕНИЕ
+
+Я, Иванов Иван Иванович, прошу рассмотреть мой вопрос о предоставлении архивной справки.
+
+Основание: личное обращение гражданина.
+
+Документы прилагаются:
+- Копия паспорта
+- Заявление
+
+Подпись: _________________ Дата: 15.03.2024
+
+Примечание: Документ содержит как печатный, так и рукописный текст.`;
+
     // Завершаем обработку
     setFiles(prev => prev.map(f => 
       f.id === fileId ? { 
         ...f, 
         status: 'completed' as const,
         progress: 100,
-        processingStep: 'Обработка завершена!'
+        textRecognitionProgress: 100,
+        processingStep: 'Обработка и распознавание завершены!',
+        recognizedText
       } : f
     ));
   };
@@ -341,14 +407,18 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
                     {fileWithProgress.status === 'error' && (
                       <AlertCircle className="w-5 h-5 text-red-500" />
                     )}
-                    {(fileWithProgress.status === 'uploading' || fileWithProgress.status === 'processing') && (
+                    {(fileWithProgress.status === 'uploading' || 
+                      fileWithProgress.status === 'processing' || 
+                      fileWithProgress.status === 'text_recognition') && (
                       <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                     )}
                   </div>
                 </div>
 
                 {/* Кнопка удаления */}
-                {!isUploading && fileWithProgress.status !== 'processing' && (
+                {!isUploading && 
+                 fileWithProgress.status !== 'processing' && 
+                 fileWithProgress.status !== 'text_recognition' && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -386,41 +456,71 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
           )}
 
           {/* Детальная информация об обработке */}
-          {files.some(f => f.status === 'processing' || f.processingStep) && (
+          {files.some(f => f.status === 'processing' || f.status === 'text_recognition' || f.processingStep) && (
             <div className="mt-4 space-y-3">
               <h4 className="text-sm font-medium text-gray-900">Детали обработки:</h4>
               {files.map((fileWithProgress) => (
-                fileWithProgress.status === 'processing' && (
-                  <div key={fileWithProgress.id} className="p-3 bg-blue-50 rounded-lg">
+                (fileWithProgress.status === 'processing' || fileWithProgress.status === 'text_recognition') && (
+                  <div key={fileWithProgress.id} className={`p-3 rounded-lg ${
+                    fileWithProgress.status === 'text_recognition' ? 'bg-green-50' : 'bg-blue-50'
+                  }`}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-blue-900">
+                      <span className={`text-sm font-medium ${
+                        fileWithProgress.status === 'text_recognition' ? 'text-green-900' : 'text-blue-900'
+                      }`}>
                         {fileWithProgress.file.name}
                       </span>
-                      <span className="text-xs text-blue-600">
+                      <span className={`text-xs ${
+                        fileWithProgress.status === 'text_recognition' ? 'text-green-600' : 'text-blue-600'
+                      }`}>
                         {fileWithProgress.progress}%
                       </span>
                     </div>
                     
                     {/* Прогресс-бар для отдельного файла */}
-                    <div className="w-full bg-blue-200 rounded-full h-1.5 mb-2">
+                    <div className={`w-full rounded-full h-1.5 mb-2 ${
+                      fileWithProgress.status === 'text_recognition' ? 'bg-green-200' : 'bg-blue-200'
+                    }`}>
                       <div
-                        className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          fileWithProgress.status === 'text_recognition' ? 'bg-green-500' : 'bg-blue-500'
+                        }`}
                         style={{ width: `${fileWithProgress.progress}%` }}
                       />
                     </div>
                     
                     {/* Текущий этап */}
                     {fileWithProgress.processingStep && (
-                      <p className="text-xs text-blue-700">
+                      <p className={`text-xs ${
+                        fileWithProgress.status === 'text_recognition' ? 'text-green-700' : 'text-blue-700'
+                      }`}>
                         {fileWithProgress.processingStep}
                       </p>
+                    )}
+                    
+                    {/* Прогресс распознавания текста */}
+                    {fileWithProgress.status === 'text_recognition' && fileWithProgress.textRecognitionProgress && (
+                      <div className="mt-2">
+                        <div className="flex justify-between text-xs text-green-600 mb-1">
+                          <span>Распознавание текста</span>
+                          <span>{fileWithProgress.textRecognitionProgress}%</span>
+                        </div>
+                        <div className="w-full bg-green-200 rounded-full h-1">
+                          <div
+                            className="bg-green-500 h-1 rounded-full transition-all duration-300"
+                            style={{ width: `${fileWithProgress.textRecognitionProgress}%` }}
+                          />
+                        </div>
+                      </div>
                     )}
                     
                     {/* Лог обработки */}
                     {fileWithProgress.processingLog && fileWithProgress.processingLog.length > 0 && (
                       <div className="mt-2 max-h-20 overflow-y-auto">
                         {fileWithProgress.processingLog.map((logEntry, index) => (
-                          <p key={index} className="text-xs text-blue-600">
+                          <p key={index} className={`text-xs ${
+                            fileWithProgress.status === 'text_recognition' ? 'text-green-600' : 'text-blue-600'
+                          }`}>
                             {logEntry}
                           </p>
                         ))}

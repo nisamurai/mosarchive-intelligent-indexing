@@ -262,6 +262,51 @@ def remove_background(image: Any) -> Any:
     return processor.remove_background(image)
 
 
+def recognize_text(image: Any, language: str = "ru", model_type: str = "printed") -> str:
+    """
+    Распознавание текста на изображении документа
+    
+    Args:
+        image: Входное изображение документа
+        language: Язык текста для распознавания (ru, en, etc.)
+        model_type: Тип модели для распознавания (printed, handwritten, mixed)
+        
+    Returns:
+        Строка с распознанным текстом
+    """
+    print(f"Распознаю текст на изображении {getattr(image, 'name', 'document')}...")
+    print(f"Параметры: язык={language}, тип модели={model_type}")
+    
+    # TODO: Здесь будет настоящая интеграция с OCR моделью
+    # - Загрузка предобученной модели (Tesseract, EasyOCR, PaddleOCR)
+    # - Предобработка изображения для лучшего распознавания
+    # - Применение модели для извлечения текста
+    # - Постобработка результата (исправление ошибок, форматирование)
+    
+    # Имитация времени обработки
+    import time
+    time.sleep(1.5)
+    
+    # Примеры распознанного текста в зависимости от параметров
+    if language == "ru":
+        if model_type == "printed":
+            result = "Пример распознанного печатного текста на русском языке. Документ содержит важную информацию для архива."
+        elif model_type == "handwritten":
+            result = "Пример распознанного рукописного текста на русском языке. Почерк может быть неразборчивым."
+        else:  # mixed
+            result = "Пример смешанного текста: печатный и рукописный. Дата: 15.03.2024, Подпись: И.И. Иванов"
+    else:  # en
+        if model_type == "printed":
+            result = "Example of recognized printed text in English. Document contains important archive information."
+        elif model_type == "handwritten":
+            result = "Example of recognized handwritten text in English. Handwriting may be unclear."
+        else:  # mixed
+            result = "Example of mixed text: printed and handwritten. Date: 03/15/2024, Signature: J. Smith"
+    
+    print(f"Распознавание завершено. Найдено {len(result)} символов.")
+    return result
+
+
 if __name__ == "__main__":
     # Создаем заглушку изображения
     class MockImage:
@@ -288,3 +333,21 @@ if __name__ == "__main__":
     print("\nЛог обработки:")
     for log_entry in processor.get_processing_log():
         print(f"  {log_entry}")
+    
+    # Пример использования функции распознавания текста
+    print("\n" + "="*50)
+    print("ПРИМЕР РАСПОЗНАВАНИЯ ТЕКСТА")
+    print("="*50)
+    
+    # Тестируем распознавание текста
+    result = recognize_text('document1.png')
+    print("Распознанный текст:", result)
+    
+    # Тестируем с разными параметрами
+    print("\nТест с английским языком и рукописным текстом:")
+    result_en = recognize_text('document2.jpg', language='en', model_type='handwritten')
+    print("Распознанный текст:", result_en)
+    
+    print("\nТест со смешанным типом текста:")
+    result_mixed = recognize_text('document3.tiff', language='ru', model_type='mixed')
+    print("Распознанный текст:", result_mixed)
