@@ -7,8 +7,25 @@ Pillow>=10.0.0
 # NumPy - для численных операций с массивами
 numpy>=1.24.0
 
-# OpenCV - для компьютерного зрения и обработки изображений
+# OpenCV - для компьютерского зрения и обработки изображений
 opencv-python>=4.8.0
 
 # scikit-image - для продвинутых алгоритмов обработки изображений
 scikit-image>=0.21.0
+
+# Зависимости для backend API авторизации
+
+# FastAPI - современный веб-фреймворк для создания API
+fastapi>=0.104.0
+
+# Uvicorn - ASGI сервер для запуска FastAPI
+uvicorn[standard]>=0.24.0
+
+# PyJWT - для работы с JWT токенами
+PyJWT>=2.8.0
+
+# Python-multipart - для обработки форм в FastAPI
+python-multipart>=0.0.6
+
+# Pydantic - для валидации данных
+pydantic>=2.5.0

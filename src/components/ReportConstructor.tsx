@@ -419,7 +419,7 @@ export const ReportConstructor: React.FC<ReportConstructorProps> = ({
               Выбрано полей: {selectedFields.length}
             </span>
             {selectedFields.length === 0 && (
-              <span className="ml-2 text-red-500">• Выберите хотя бы одно поле</span>
+              <span className="ml-2 text-red-500"> Выберите хотя бы одно поле</span>
             )}
           </div>
           

@@ -397,7 +397,7 @@ export const VerifyPage: React.FC<VerifyPageProps> = ({
                   <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
                     <ul className="text-xs text-red-700 space-y-1">
                       {validationInfo.validationErrors.map((error, index) => (
-                        <li key={index}>• {error}</li>
+                        <li key={index}> {error}</li>
                       ))}
                     </ul>
                   </div>
