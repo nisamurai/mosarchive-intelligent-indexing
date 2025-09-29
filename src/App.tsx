@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import UploadComponent from './components/UploadComponent';
+import VerifyPage from './components/VerifyPage';
 import './index.css';
 
 // Интерфейс для обработанного файла с результатами
@@ -10,10 +11,16 @@ interface ProcessedFile {
   processedAt: Date;
 }
 
+// Состояние приложения для верификации
+type AppState = 'upload' | 'verify';
+
 function App() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [processedFiles, setProcessedFiles] = useState<ProcessedFile[]>([]);
   const [selectedFile, setSelectedFile] = useState<ProcessedFile | null>(null);
+  const [currentState, setCurrentState] = useState<AppState>('upload');
+  const [verifyFile, setVerifyFile] = useState<ProcessedFile | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>('');
 
   // Обработчик загрузки файлов
   const handleUpload = (files: File[]) => {
@@ -26,6 +33,11 @@ function App() {
     // Симуляция обработки ИИ с результатами распознавания текста
     setTimeout(() => {
       console.log('ИИ обработал документы:', files.map(f => f.name));
+      
+      // Создаем URL для изображений (для демонстрации)
+      const createImageUrl = (file: File) => {
+        return URL.createObjectURL(file);
+      };
       
       // Добавляем обработанные файлы с результатами распознавания
       const newProcessedFiles: ProcessedFile[] = files.map(file => ({
@@ -56,6 +68,73 @@ function App() {
       setProcessedFiles(prev => [...prev, ...newProcessedFiles]);
     }, 5000); // Увеличиваем время для демонстрации процесса
   };
+
+  // Обработчик запуска верификации
+  const handleVerifyFile = (processedFile: ProcessedFile) => {
+    setVerifyFile(processedFile);
+    setImageUrl(URL.createObjectURL(processedFile.file));
+    setCurrentState('verify');
+  };
+
+  // Обработчик сохранения результатов верификации
+  const handleSaveVerification = async (editedText: string) => {
+    if (!verifyFile) return;
+    
+    try {
+      // Обновляем текст в списке обработанных файлов
+      setProcessedFiles(prev => prev.map(file => 
+        file.file === verifyFile.file 
+          ? { ...file, recognizedText: editedText }
+          : file
+      ));
+      
+      console.log('Результаты верификации сохранены:', {
+        fileName: verifyFile.file.name,
+        originalLength: verifyFile.recognizedText?.length,
+        newLength: editedText.length
+      });
+      
+      // Возвращаемся к списку файлов
+      setCurrentState('upload');
+      
+      // Очищаем URL изображения для освобождения памяти
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    } catch (error) {
+      console.error('Ошибка при сохранении результатов верификации:', error);
+      throw error;
+    }
+  };
+
+  // Обработчик отмены верификации
+  const handleCancelVerification = () => {
+    setCurrentState('upload');
+    setVerifyFile(null);
+    
+    // Очищаем URL изображения для освобождения памяти
+    if (imageUrl) {
+      URL.revokeObjectURL(imageUrl);
+      setImageUrl('');
+    }
+  };
+
+  // Отрисовка компонента верификации
+  if (currentState === 'verify' && verifyFile && imageUrl) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <VerifyPage
+            imageUrl={imageUrl}
+            recognizedText={verifyFile.recognizedText || ''}
+            fileName={verifyFile.file.name}
+            onSave={handleSaveVerification}
+            onCancel={handleCancelVerification}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -101,6 +180,12 @@ function App() {
                           className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
                           Показать текст
+                        </button>
+                        <button
+                          onClick={() => handleVerifyFile(processedFile)}
+                          className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors ml-2"
+                        >
+                          Верификация
                         </button>
                       </div>
                     </div>
