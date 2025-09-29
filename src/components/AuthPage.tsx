@@ -15,7 +15,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
 
   const API_BASE_URL = 'http://localhost:8000';
 
-  const handleLogin = async (username: string, password: string) => {
+  const handleLogin = async (username: string, password: string, rememberMe?: boolean) => {
     setIsLoading(true);
     setError('');
     
@@ -48,9 +48,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
 
       const userInfo = await userResponse.json();
 
-      // Сохраняем токен в localStorage
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      // Сохраняем токен в зависимости от настройки "запомнить меня"
+      if (rememberMe) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      } else {
+        sessionStorage.setItem('authToken', data.token);
+        sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+      }
 
       onAuthSuccess(data.token, userInfo);
     } catch (err) {
@@ -98,7 +103,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
 
       const userInfo = await userResponse.json();
 
-      // Сохраняем токен в localStorage
+      // При регистрации всегда сохраняем в localStorage (по умолчанию "запомнить меня")
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
 
@@ -122,7 +127,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div>
       {mode === 'login' ? (
         <LoginForm
           onLogin={handleLogin}

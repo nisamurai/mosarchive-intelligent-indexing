@@ -1,3 +1,232 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #f8fafc;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #3b82f6;
+  --radius: 0.5rem;
+}
+
+@theme dark {
+  --color-background: #0f172a;
+  --color-foreground: #f8fafc;
+  --color-card: #0f172a;
+  --color-card-foreground: #f8fafc;
+  --color-popover: #0f172a;
+  --color-popover-foreground: #f8fafc;
+  --color-primary: #60a5fa;
+  --color-primary-foreground: #0f172a;
+  --color-secondary: #1e293b;
+  --color-secondary-foreground: #f8fafc;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-accent: #1e293b;
+  --color-accent-foreground: #f8fafc;
+  --color-destructive: #7f1d1d;
+  --color-destructive-foreground: #f8fafc;
+  --color-border: #1e293b;
+  --color-input: #1e293b;
+  --color-ring: #60a5fa;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+/* Кастомные стили для приложения */
+.stepper-connector {
+  @apply flex-1 h-0.5 bg-gray-300;
+}
+
+.stepper-connector.completed {
+  @apply bg-green-500;
+}
+
+.stepper-step {
+  @apply flex flex-col items-center;
+}
+
+.stepper-step-circle {
+  @apply w-10 h-10 rounded-full border-2 flex items-center justify-center transition-colors;
+}
+
+.stepper-step-circle.completed {
+  @apply bg-green-500 border-green-500 text-white;
+}
+
+.stepper-step-circle.active {
+  @apply bg-blue-500 border-blue-500 text-white;
+}
+
+.stepper-step-circle.pending {
+  @apply bg-gray-100 border-gray-300 text-gray-500;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Стили для drag and drop */
+.drag-over {
+  @apply border-blue-500 bg-blue-50;
+}
+
+.drag-active {
+  @apply scale-105 shadow-lg;
+}
+
+/* Стили для прогресс-бара */
+.progress-bar {
+  @apply w-full bg-gray-200 rounded-full h-2;
+}
+
+.progress-fill {
+  @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+}
+
+/* Стили для карточек */
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:scale-105;
+}
+
+/* Стили для кнопок */
+.btn-primary {
+  @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors;
+}
+
+.btn-success {
+  @apply bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors;
+}
+
+.btn-danger {
+  @apply bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors;
+}
+
+/* Стили для форм */
+.form-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.form-error {
+  @apply text-red-600 text-sm mt-1;
+}
+
+/* Стили для модальных окон */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-lg max-w-4xl w-full max-h-[80vh] flex flex-col;
+}
+
+/* Стили для таблиц */
+.table {
+  @apply w-full border-collapse;
+}
+
+.table th {
+  @apply bg-gray-50 px-4 py-2 text-left text-sm font-medium text-gray-900 border-b border-gray-200;
+}
+
+.table td {
+  @apply px-4 py-2 text-sm text-gray-700 border-b border-gray-200;
+}
+
+.table tr:hover {
+  @apply bg-gray-50;
+}
+
+/* Стили для уведомлений */
+.notification {
+  @apply fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50;
+}
+
+.notification.success {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.notification.error {
+  @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+.notification.warning {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+.notification.info {
+  @apply bg-blue-100 text-blue-800 border border-blue-200;
+}
+
+/* Стили для загрузки */
+.loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
+}
+
+/* Стили для адаптивности */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    @apply hidden;
+  }
+  
+  .mobile-full {
+    @apply w-full;
+  }
+  
+  .mobile-stack {
+    @apply flex-col space-y-4;
+  }
+}
+
+/* Стили для печати */
+@media print {
+  .no-print {
+    @apply hidden;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+}

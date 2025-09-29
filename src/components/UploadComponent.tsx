@@ -17,14 +17,8 @@ interface FileWithProgress {
   file: File;
   id: string;
   progress: number;
-  status: 'pending' | 'uploading' | 'processing' | 'text_recognition' | 'attribute_extraction' | 'completed' | 'error';
+  status: 'pending' | 'uploading' | 'completed' | 'error';
   error?: string;
-  processingStep?: string;
-  processingLog?: string[];
-  recognizedText?: string;
-  textRecognitionProgress?: number;
-  extractedAttributes?: ExtractedAttributes;
-  attributeExtractionProgress?: number;
 }
 
 // Пропсы компонента
@@ -145,174 +139,6 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
     setFiles(prev => prev.filter(f => f.id !== fileId));
   }, []);
 
-  // Симуляция обработки изображения
-  const simulateImageProcessing = async (fileId: string) => {
-    const processingSteps = [
-      'Коррекция перспективы документа...',
-      'Выполняется выравнивание изображения...',
-      'Повышаем контрастность изображения...',
-      'Удаляем шум с изображения...',
-      'Выполняется бинаризация изображения...',
-      'Улучшаем разрешение изображения...'
-    ];
-
-    // Обновляем статус на "обработка"
-    setFiles(prev => prev.map(f => 
-      f.id === fileId ? { 
-        ...f, 
-        status: 'processing' as const,
-        processingLog: [],
-        progress: 0
-      } : f
-    ));
-
-    // Симулируем каждый этап обработки
-    for (let i = 0; i < processingSteps.length; i++) {
-      const step = processingSteps[i];
-      const progress = Math.round(((i + 1) / processingSteps.length) * 60); // 60% для обработки изображения
-      
-      // Обновляем текущий этап и прогресс
-      setFiles(prev => prev.map(f => 
-        f.id === fileId ? { 
-          ...f, 
-          processingStep: step,
-          progress,
-          processingLog: [...(f.processingLog || []), `[${i + 1}/${processingSteps.length}] ${step}`]
-        } : f
-      ));
-
-      // Задержка для демонстрации
-      await new Promise(resolve => setTimeout(resolve, 800));
-    }
-
-    // Переходим к распознаванию текста
-    await simulateTextRecognition(fileId);
-  };
-
-  // Симуляция распознавания текста
-  const simulateTextRecognition = async (fileId: string) => {
-    // Обновляем статус на "распознавание текста"
-    setFiles(prev => prev.map(f => 
-      f.id === fileId ? { 
-        ...f, 
-        status: 'text_recognition' as const,
-        processingStep: 'Идёт распознавание текста...',
-        textRecognitionProgress: 0
-      } : f
-    ));
-
-    // Симулируем этапы распознавания текста
-    const textRecognitionSteps = [
-      'Анализ структуры документа...',
-      'Определение областей с текстом...',
-      'Распознавание печатного текста...',
-      'Распознавание рукописного текста...',
-      'Постобработка результата...'
-    ];
-
-    for (let i = 0; i < textRecognitionSteps.length; i++) {
-      const step = textRecognitionSteps[i];
-      const progress = 60 + Math.round(((i + 1) / textRecognitionSteps.length) * 40); // 40% для распознавания текста
-      
-      setFiles(prev => prev.map(f => 
-        f.id === fileId ? { 
-          ...f, 
-          processingStep: step,
-          progress,
-          textRecognitionProgress: Math.round(((i + 1) / textRecognitionSteps.length) * 100),
-          processingLog: [...(f.processingLog || []), `[Текст] ${step}`]
-        } : f
-      ));
-
-      await new Promise(resolve => setTimeout(resolve, 600));
-    }
-
-    // Генерируем пример распознанного текста
-    const recognizedText = `Пример распознанного текста из документа ${fileId}:
-
-ДОКУМЕНТ № 12345
-Дата: 15.03.2024
-
-ЗАЯВЛЕНИЕ
-
-Я, Иванов Иван Иванович, прошу рассмотреть мой вопрос о предоставлении архивной справки.
-
-Основание: личное обращение гражданина.
-
-Документы прилагаются:
-- Копия паспорта
-- Заявление
-
-Подпись: _________________ Дата: 15.03.2024
-
-Примечание: Документ содержит как печатный, так и рукописный текст.`;
-
-    // Переходим к извлечению атрибутов
-    await simulateAttributeExtraction(fileId, recognizedText);
-  };
-
-  // Симуляция извлечения атрибутов
-  const simulateAttributeExtraction = async (fileId: string, recognizedText: string) => {
-    // Обновляем статус на "извлечение атрибутов"
-    setFiles(prev => prev.map(f => 
-      f.id === fileId ? { 
-        ...f, 
-        status: 'attribute_extraction' as const,
-        processingStep: 'Извлекаем атрибуты из текста...',
-        attributeExtractionProgress: 0
-      } : f
-    ));
-
-    // Симулируем этапы извлечения атрибутов
-    const attributeExtractionSteps = [
-      'Анализ структуры текста...',
-      'Поиск ФИО и именованных сущностей...',
-      'Извлечение дат и временных меток...',
-      'Поиск архивных шифров и кодов...',
-      'Валидация извлеченных данных...'
-    ];
-
-    for (let i = 0; i < attributeExtractionSteps.length; i++) {
-      const step = attributeExtractionSteps[i];
-      const progress = 80 + Math.round(((i + 1) / attributeExtractionSteps.length) * 20); // 20% для извлечения атрибутов
-      
-      setFiles(prev => prev.map(f => 
-        f.id === fileId ? { 
-          ...f, 
-          processingStep: step,
-          progress,
-          attributeExtractionProgress: Math.round(((i + 1) / attributeExtractionSteps.length) * 100),
-          processingLog: [...(f.processingLog || []), `[Атрибуты] ${step}`]
-        } : f
-      ));
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-
-    // Генерируем пример извлеченных атрибутов
-    const extractedAttributes: ExtractedAttributes = {
-      fio: "Иванов Иван Иванович",
-      date: "15.03.2024",
-      address: "",
-      archive_code: "Фонд 10, опись 5, дело 20",
-      document_number: "12345",
-      organization: ""
-    };
-
-    // Завершаем обработку
-    setFiles(prev => prev.map(f => 
-      f.id === fileId ? { 
-        ...f, 
-        status: 'completed' as const,
-        progress: 100,
-        textRecognitionProgress: 100,
-        attributeExtractionProgress: 100,
-        processingStep: 'Обработка, распознавание и извлечение атрибутов завершены!',
-        recognizedText,
-        extractedAttributes
-      } : f
-    ));
-  };
 
   // Обработчик загрузки файлов
   const handleUpload = useCallback(async () => {
@@ -331,17 +157,11 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
         
         // Обновляем прогресс загрузки
         setFiles(prev => prev.map(f => 
-          f.id === file.id ? { ...f, progress: 100 } : f
+          f.id === file.id ? { ...f, progress: 100, status: 'completed' as const } : f
         ));
 
         // Небольшая задержка для демонстрации загрузки
         await new Promise(resolve => setTimeout(resolve, 300));
-      }
-
-      // Начинаем обработку изображений
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        await simulateImageProcessing(file.id);
       }
 
       // Вызываем callback с загруженными файлами
@@ -421,9 +241,6 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
             <p className="text-sm text-gray-500">
               Максимум {maxFiles} файлов, до {Math.round(maxFileSize / (1024 * 1024))}MB каждый
             </p>
-            <p className="text-xs text-gray-400 mt-2">
-              Нажмите Enter или Пробел для выбора файлов
-            </p>
           </div>
         </div>
       </div>
@@ -473,20 +290,14 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
                     {fileWithProgress.status === 'error' && (
                       <AlertCircle className="w-5 h-5 text-red-500" />
                     )}
-                    {(fileWithProgress.status === 'uploading' || 
-                      fileWithProgress.status === 'processing' || 
-                      fileWithProgress.status === 'text_recognition' ||
-                      fileWithProgress.status === 'attribute_extraction') && (
+                    {fileWithProgress.status === 'uploading' && (
                       <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                     )}
                   </div>
                 </div>
 
                 {/* Кнопка удаления */}
-                {!isUploading && 
-                 fileWithProgress.status !== 'processing' && 
-                 fileWithProgress.status !== 'text_recognition' &&
-                 fileWithProgress.status !== 'attribute_extraction' && (
+                {!isUploading && fileWithProgress.status !== 'uploading' && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -507,7 +318,7 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
           {isUploading && (
             <div className="mt-4">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>Обработка файлов...</span>
+                <span>Загрузка файлов...</span>
                 <span>
                   {files.filter(f => f.status === 'completed').length} / {files.length}
                 </span>
@@ -523,105 +334,6 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
             </div>
           )}
 
-          {/* Детальная информация об обработке */}
-          {files.some(f => f.status === 'processing' || f.status === 'text_recognition' || f.status === 'attribute_extraction' || f.processingStep) && (
-            <div className="mt-4 space-y-3">
-              <h4 className="text-sm font-medium text-gray-900">Детали обработки:</h4>
-              {files.map((fileWithProgress) => (
-                (fileWithProgress.status === 'processing' || fileWithProgress.status === 'text_recognition' || fileWithProgress.status === 'attribute_extraction') && (
-                  <div key={fileWithProgress.id} className={`p-3 rounded-lg ${
-                    fileWithProgress.status === 'text_recognition' ? 'bg-green-50' : 
-                    fileWithProgress.status === 'attribute_extraction' ? 'bg-purple-50' : 'bg-blue-50'
-                  }`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className={`text-sm font-medium ${
-                        fileWithProgress.status === 'text_recognition' ? 'text-green-900' : 
-                        fileWithProgress.status === 'attribute_extraction' ? 'text-purple-900' : 'text-blue-900'
-                      }`}>
-                        {fileWithProgress.file.name}
-                      </span>
-                      <span className={`text-xs ${
-                        fileWithProgress.status === 'text_recognition' ? 'text-green-600' : 
-                        fileWithProgress.status === 'attribute_extraction' ? 'text-purple-600' : 'text-blue-600'
-                      }`}>
-                        {fileWithProgress.progress}%
-                      </span>
-                    </div>
-                    
-                    {/* Прогресс-бар для отдельного файла */}
-                    <div className={`w-full rounded-full h-1.5 mb-2 ${
-                      fileWithProgress.status === 'text_recognition' ? 'bg-green-200' : 
-                      fileWithProgress.status === 'attribute_extraction' ? 'bg-purple-200' : 'bg-blue-200'
-                    }`}>
-                      <div
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          fileWithProgress.status === 'text_recognition' ? 'bg-green-500' : 
-                          fileWithProgress.status === 'attribute_extraction' ? 'bg-purple-500' : 'bg-blue-500'
-                        }`}
-                        style={{ width: `${fileWithProgress.progress}%` }}
-                      />
-                    </div>
-                    
-                    {/* Текущий этап */}
-                    {fileWithProgress.processingStep && (
-                      <p className={`text-xs ${
-                        fileWithProgress.status === 'text_recognition' ? 'text-green-700' : 
-                        fileWithProgress.status === 'attribute_extraction' ? 'text-purple-700' : 'text-blue-700'
-                      }`}>
-                        {fileWithProgress.processingStep}
-                      </p>
-                    )}
-                    
-                    {/* Прогресс распознавания текста */}
-                    {fileWithProgress.status === 'text_recognition' && fileWithProgress.textRecognitionProgress && (
-                      <div className="mt-2">
-                        <div className="flex justify-between text-xs text-green-600 mb-1">
-                          <span>Распознавание текста</span>
-                          <span>{fileWithProgress.textRecognitionProgress}%</span>
-                        </div>
-                        <div className="w-full bg-green-200 rounded-full h-1">
-                          <div
-                            className="bg-green-500 h-1 rounded-full transition-all duration-300"
-                            style={{ width: `${fileWithProgress.textRecognitionProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Прогресс извлечения атрибутов */}
-                    {fileWithProgress.status === 'attribute_extraction' && fileWithProgress.attributeExtractionProgress && (
-                      <div className="mt-2">
-                        <div className="flex justify-between text-xs text-purple-600 mb-1">
-                          <span>Извлечение атрибутов</span>
-                          <span>{fileWithProgress.attributeExtractionProgress}%</span>
-                        </div>
-                        <div className="w-full bg-purple-200 rounded-full h-1">
-                          <div
-                            className="bg-purple-500 h-1 rounded-full transition-all duration-300"
-                            style={{ width: `${fileWithProgress.attributeExtractionProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Лог обработки */}
-                    {fileWithProgress.processingLog && fileWithProgress.processingLog.length > 0 && (
-                      <div className="mt-2 max-h-20 overflow-y-auto">
-                        {fileWithProgress.processingLog.map((logEntry, index) => (
-                          <p key={index} className={`text-xs ${
-                            fileWithProgress.status === 'text_recognition' ? 'text-green-600' : 
-                            fileWithProgress.status === 'attribute_extraction' ? 'text-purple-600' : 'text-blue-600'
-                          }`}>
-                            {logEntry}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              ))}
-            </div>
-          )}
 
           {/* Кнопка загрузки */}
           {!isUploading && files.length > 0 && (
@@ -634,61 +346,6 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
             </button>
           )}
 
-          {/* Отображение результатов обработки */}
-          {files.some(f => f.status === 'completed' && f.extractedAttributes) && (
-            <div className="mt-6 space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                Результаты обработки
-              </h3>
-              
-              {files.map((fileWithProgress) => (
-                fileWithProgress.status === 'completed' && fileWithProgress.extractedAttributes && (
-                  <div key={fileWithProgress.id} className="border rounded-lg p-4 bg-gray-50">
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">
-                        {fileWithProgress.file.name}
-                      </h4>
-                      
-                      {/* Извлеченные атрибуты */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                        {Object.entries(fileWithProgress.extractedAttributes).map(([key, value]) => (
-                          value && (
-                            <div key={key} className="flex flex-col">
-                              <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                                {key === 'fio' ? 'ФИО' :
-                                 key === 'date' ? 'Дата' :
-                                 key === 'address' ? 'Адрес' :
-                                 key === 'archive_code' ? 'Архивный шифр' :
-                                 key === 'document_number' ? 'Номер документа' :
-                                 key === 'organization' ? 'Организация' : key}
-                              </span>
-                              <span className="text-sm text-gray-900 mt-1 p-2 bg-white rounded border">
-                                {value}
-                              </span>
-                            </div>
-                          )
-                        ))}
-                      </div>
-                      
-                      {/* Распознанный текст */}
-                      {fileWithProgress.recognizedText && (
-                        <div>
-                          <h5 className="text-sm font-medium text-gray-900 mb-2">
-                            Распознанный текст:
-                          </h5>
-                          <div className="text-sm text-gray-700 bg-white p-3 rounded border max-h-40 overflow-y-auto">
-                            <pre className="whitespace-pre-wrap font-sans">
-                              {fileWithProgress.recognizedText}
-                            </pre>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>

@@ -1,12 +1,18 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { User, LogOut, Settings } from 'lucide-react';
+import { useNavigation } from '../contexts/NavigationContext';
+import { User, LogOut, Settings, BarChart3 } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
+  const { goToStep } = useNavigation();
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleGoToStatistics = () => {
+    goToStep('statistics');
   };
 
   if (!isAuthenticated || !user) {
@@ -32,9 +38,9 @@ const Header: React.FC = () => {
           </div>
 
           {/* Информация о пользователе и кнопка выхода */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             {/* Информация о пользователе */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
               <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
                 <User className="w-4 h-4 text-blue-600" />
               </div>
@@ -46,18 +52,27 @@ const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* Кнопка настроек */}
+            {/* Кнопка статистики
+            <button
+              onClick={handleGoToStatistics}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Статистика"
+            >
+              <BarChart3 className="w-5 h-5" />
+            </button>
+
+            Кнопка настроек
             <button
               className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
               title="Настройки"
             >
               <Settings className="w-5 h-5" />
-            </button>
+            </button> */}
 
             {/* Кнопка выхода */}
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-red-100 rounded-lg transition-colors"
               title="Выйти из системы"
             >
               <LogOut className="w-4 h-4" />

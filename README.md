@@ -36,26 +36,53 @@ pip install -r requirements.txt
 python start_backend.py
 ```
 
-**Frontend (выберите один из вариантов):**
-
-```bash
-bunx vite
-```
-
-**Вариант 2 (через скрипт):**
+**Frontend (рекомендуемый способ):**
 ```bash
 bun run dev
 ```
 
-**Вариант 3 (альтернативный порт):**
+**Альтернативные способы запуска frontend:**
 ```bash
-bunx vite --port 3000
+# Прямой запуск через Vite
+bunx vite
+
+# Запуск с указанием порта
+bunx vite --port 5173
+
+# Запуск в режиме preview (для тестирования сборки)
+bun run preview
 ```
 
 4. Откройте браузер и перейдите по адресу:
-   - `http://localhost:5173` (стандартный порт frontend)
+   - `http://localhost:5173` (frontend - фиксированный порт)
    - `http://localhost:8000` (backend API)
    - `http://localhost:8000/docs` (документация API)
+
+## Настройка портов
+
+Порты настроены в `vite.config.ts`:
+- **5173** - порт для разработки (dev server)
+- **4173** - порт для preview режима
+- **8000** - порт backend API
+
+Если порт 5173 занят, Vite автоматически выберет следующий доступный порт (5174, 5175, и т.д.).
+
+### Решение проблем с портами
+
+**Если порт 5173 занят:**
+```bash
+# Остановить все процессы Node.js
+taskkill /f /im node.exe
+
+# Или найти и остановить конкретный процесс
+netstat -ano | findstr :5173
+taskkill /f /pid <PID>
+```
+
+**Принудительный запуск на конкретном порту:**
+```bash
+bunx vite --port 5173 --force
+```
 
 ## Компонент UploadComponent
 
@@ -410,7 +437,28 @@ pip install -r requirements.txt
 ## Сборка для продакшена
 
 ```bash
+# Сборка проекта
 bun run build
+
+# Предварительный просмотр сборки
+bun run preview
 ```
 
 Собранные файлы будут в папке `dist/`.
+
+## Команды разработки
+
+| Команда | Описание | Порт |
+|---------|----------|------|
+| `bun run dev` | Запуск в режиме разработки | 5173 |
+| `bun run build` | Сборка для продакшена | - |
+| `bun run preview` | Предварительный просмотр сборки | 4173 |
+| `bunx vite` | Прямой запуск Vite | 5173 |
+| `bunx vite --port 3000` | Запуск на порту 3000 | 3000 |
+
+## Структура портов
+
+- **Frontend (Vite)**: `http://localhost:5173`
+- **Backend API**: `http://localhost:8000`
+- **API Docs**: `http://localhost:8000/docs`
+- **Preview**: `http://localhost:4173`

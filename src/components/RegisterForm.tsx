@@ -101,22 +101,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                      formData.password === formData.confirmPassword;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="space-y-6">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-green-100">
             <User className="h-6 w-6 text-green-600" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-4 text-center text-2xl font-extrabold text-gray-900">
             Регистрация
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-1 text-center text-sm text-gray-600">
             Создайте новый аккаунт для доступа к системе
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+          <div className="space-y-3">
             {/* Поле логина */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -134,7 +133,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                   required
                   value={formData.username}
                   onChange={handleInputChange}
-                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border ${
+                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border ${
                     validationErrors.username 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
@@ -163,7 +162,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border ${
+                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border ${
                     validationErrors.email 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
@@ -193,7 +192,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border ${
+                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-10 py-2 border ${
                     validationErrors.password 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
@@ -236,7 +235,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border ${
+                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-10 py-2 border ${
                     validationErrors.confirmPassword 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
@@ -284,7 +283,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             <button
               type="submit"
               disabled={!isFormValid || isLoading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white ${
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white ${
                 !isFormValid || isLoading
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
@@ -315,17 +314,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             </p>
           </div>
         </form>
-
-        {/* Требования к паролю */}
-        <div className="mt-6 p-4 bg-green-50 rounded-lg">
-          <h3 className="text-sm font-medium text-green-800 mb-2">Требования к паролю:</h3>
-          <ul className="text-xs text-green-700 space-y-1">
-            <li>Минимум 6 символов</li>
-            <li>Заглавные и строчные буквы</li>
-            <li>Хотя бы одна цифра</li>
-          </ul>
-        </div>
-      </div>
     </div>
   );
 };

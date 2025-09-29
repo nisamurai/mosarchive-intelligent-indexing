@@ -35,8 +35,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuth = async (): Promise<boolean> => {
     try {
-      const storedToken = localStorage.getItem('authToken');
-      const storedUser = localStorage.getItem('userInfo');
+      // Проверяем сначала localStorage, затем sessionStorage
+      let storedToken = localStorage.getItem('authToken');
+      let storedUser = localStorage.getItem('userInfo');
+      
+      if (!storedToken || !storedUser) {
+        storedToken = sessionStorage.getItem('authToken');
+        storedUser = sessionStorage.getItem('userInfo');
+      }
 
       if (!storedToken || !storedUser) {
         setIsLoading(false);
@@ -57,9 +63,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(false);
         return true;
       } else {
-        // Токен недействителен, очищаем localStorage
+        // Токен недействителен, очищаем оба хранилища
         localStorage.removeItem('authToken');
         localStorage.removeItem('userInfo');
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('userInfo');
         setToken(null);
         setUser(null);
         setIsLoading(false);
@@ -67,9 +75,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('Ошибка проверки авторизации:', error);
-      // В случае ошибки сети очищаем данные
+      // В случае ошибки сети очищаем данные из обоих хранилищ
       localStorage.removeItem('authToken');
       localStorage.removeItem('userInfo');
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('userInfo');
       setToken(null);
       setUser(null);
       setIsLoading(false);
@@ -80,8 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = (newToken: string, userInfo: User) => {
     setToken(newToken);
     setUser(userInfo);
-    localStorage.setItem('authToken', newToken);
-    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    // Данные уже сохранены в AuthPage, здесь только обновляем состояние
   };
 
   const logout = async () => {
@@ -103,6 +112,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       localStorage.removeItem('authToken');
       localStorage.removeItem('userInfo');
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('userInfo');
     }
   };
 

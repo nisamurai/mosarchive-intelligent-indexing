@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
 
 interface LoginFormProps {
-  onLogin: (username: string, password: string) => Promise<void>;
+  onLogin: (username: string, password: string, rememberMe?: boolean) => Promise<void>;
   onSwitchToRegister: () => void;
   isLoading?: boolean;
   error?: string;
@@ -65,7 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
     
     try {
-      await onLogin(formData.username, formData.password);
+      await onLogin(formData.username, formData.password, rememberMe);
     } catch (err) {
       // Ошибка обрабатывается в родительском компоненте
     }
@@ -74,22 +74,21 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const isFormValid = formData.username.trim() && formData.password;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="space-y-6">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
             <User className="h-6 w-6 text-blue-600" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-4 text-center text-2xl font-extrabold text-gray-900">
             Вход в систему
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-1 text-center text-sm text-gray-600">
             Введите свои учетные данные для входа
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+          <div className="space-y-3">
             {/* Поле логина */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -107,7 +106,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                   required
                   value={formData.username}
                   onChange={handleInputChange}
-                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border ${
+                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border ${
                     validationErrors.username 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -137,7 +136,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border ${
+                  className={`appearance-none rounded-lg relative block w-full pl-10 pr-10 py-2 border ${
                     validationErrors.password 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -165,20 +164,18 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </div>
 
           {/* Чекбокс "Запомнить меня" */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Запомнить меня
-              </label>
-            </div>
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              Запомнить меня
+            </label>
           </div>
 
           {/* Сообщение об ошибке */}
@@ -202,7 +199,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             <button
               type="submit"
               disabled={!isFormValid || isLoading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white ${
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white ${
                 !isFormValid || isLoading
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
@@ -233,16 +230,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
             </p>
           </div>
         </form>
-
-        {/* Демо-аккаунты */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Демо-аккаунты:</h3>
-          <div className="text-xs text-blue-700 space-y-1">
-            <div>Логин: <code className="bg-blue-100 px-1 rounded">admin</code> | Пароль: <code className="bg-blue-100 px-1 rounded">admin123</code></div>
-            <div>Логин: <code className="bg-blue-100 px-1 rounded">user</code> | Пароль: <code className="bg-blue-100 px-1 rounded">user123</code></div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
