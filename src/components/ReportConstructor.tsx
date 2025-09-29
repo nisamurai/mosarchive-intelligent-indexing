@@ -444,10 +444,10 @@ export const ReportConstructor: React.FC<ReportConstructorProps> = ({
             Информация о формате CSV:
           </h4>
           <ul className="text-xs text-blue-700 space-y-1">
-            <li>• Формат: UTF-8 с BOM для корректного отображения русских символов</li>
-            <li>• Разделитель: запятая (,) согласно стандарту RFC 4180</li>
-            <li>• Экранирование: кавычки удваиваются, значения в кавычках если содержат запятые</li>
-            <li>• Совместимость: Excel, Google Sheets, LibreOffice Calc</li>
+            <li>Формат: UTF-8 с BOM для корректного отображения русских символов</li>
+            <li>Разделитель: запятая (,) согласно стандарту RFC 4180</li>
+            <li>Экранирование: кавычки удваиваются, значения в кавычках если содержат запятые</li>
+            <li>Совместимость: Excel, Google Sheets, LibreOffice Calc</li>
           </ul>
         </div>
       </div>

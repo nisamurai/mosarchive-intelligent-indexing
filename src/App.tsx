@@ -2,6 +2,7 @@ import { useState } from 'react';
 import UploadComponent from './components/UploadComponent';
 import VerifyPage from './components/VerifyPage';
 import ReportConstructor from './components/ReportConstructor';
+import StatisticsComponent from './components/StatisticsComponent';
 import { adaptProcessedFile, createSampleData } from './lib/documentDataAdapter';
 import './index.css';
 
@@ -14,7 +15,7 @@ interface ProcessedFile {
 }
 
 // Состояние приложения для верификации
-type AppState = 'upload' | 'verify' | 'report';
+type AppState = 'upload' | 'verify' | 'report' | 'statistics';
 
 function App() {
   const [, setUploadedFiles] = useState<File[]>([]);
@@ -133,6 +134,11 @@ function App() {
     setCurrentState('report');
   };
 
+  // Обработчик открытия статистики
+  const handleOpenStatistics = () => {
+    setCurrentState('statistics');
+  };
+
   // Обработчик возврата к главной странице
   const handleBackToMain = () => {
     setCurrentState('upload');
@@ -184,6 +190,39 @@ function App() {
     );
   }
 
+  // Отрисовка страницы статистики
+  if (currentState === 'statistics') {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Заголовок страницы */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Статистика обработки
+              </h1>
+              <p className="text-gray-600">
+                Анализ результатов автоматического распознавания документов
+              </p>
+            </div>
+            <button
+              onClick={handleBackToMain}
+              className="px-4 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              ← Назад к документам
+            </button>
+          </div>
+
+          <StatisticsComponent 
+            showChart={true}
+            autoRefresh={false}
+            refreshInterval={30000}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -203,18 +242,31 @@ function App() {
           maxFileSize={100 * 1024 * 1024} // 100MB
         />
 
-        {/* Кнопка генерации отчёта - доступна всегда */}
+        {/* Кнопки навигации - доступны всегда */}
         <div className="mt-8 text-center">
-          <button
-            onClick={handleOpenReport}
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Перейти к конструктору отчёта
-          </button>
-          <p className="text-sm text-gray-500 mt-2">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={handleOpenReport}
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Конструктор отчёта
+            </button>
+            
+            <button
+              onClick={handleOpenStatistics}
+              className="inline-flex items-center px-6 py-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Статистика обработки
+            </button>
+          </div>
+          
+          <p className="text-sm text-gray-500 mt-4">
             {processedFiles.length > 0 
               ? `Доступно ${processedFiles.length} документов для анализа` 
               : 'Будут использованы тестовые данные для демонстрации'
