@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import UploadComponent from './components/UploadComponent';
 import VerifyPage from './components/VerifyPage';
+import ReportConstructor from './components/ReportConstructor';
+import { adaptProcessedFile, createSampleData } from './lib/documentDataAdapter';
 import './index.css';
 
 // Интерфейс для обработанного файла с результатами
@@ -12,15 +14,26 @@ interface ProcessedFile {
 }
 
 // Состояние приложения для верификации
-type AppState = 'upload' | 'verify';
+type AppState = 'upload' | 'verify' | 'report';
 
 function App() {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [, setUploadedFiles] = useState<File[]>([]);
   const [processedFiles, setProcessedFiles] = useState<ProcessedFile[]>([]);
   const [selectedFile, setSelectedFile] = useState<ProcessedFile | null>(null);
   const [currentState, setCurrentState] = useState<AppState>('upload');
   const [verifyFile, setVerifyFile] = useState<ProcessedFile | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
+  
+  // Функция для получения данных в формате для отчёта
+  const getReportData = () => {
+    // Если есть обработанные файлы, используем их
+    if (processedFiles.length > 0) {
+      return processedFiles.map(adaptProcessedFile);
+    }
+    
+    // Если файлов нет, создаём тестовые данные для демонстрации
+    return createSampleData(5);
+  };
 
   // Обработчик загрузки файлов
   const handleUpload = (files: File[]) => {
@@ -34,10 +47,6 @@ function App() {
     setTimeout(() => {
       console.log('ИИ обработал документы:', files.map(f => f.name));
       
-      // Создаем URL для изображений (для демонстрации)
-      const createImageUrl = (file: File) => {
-        return URL.createObjectURL(file);
-      };
       
       // Добавляем обработанные файлы с результатами распознавания
       const newProcessedFiles: ProcessedFile[] = files.map(file => ({
@@ -119,6 +128,16 @@ function App() {
     }
   };
 
+  // Обработчик открытия конструктора отчёта
+  const handleOpenReport = () => {
+    setCurrentState('report');
+  };
+
+  // Обработчик возврата к главной странице
+  const handleBackToMain = () => {
+    setCurrentState('upload');
+  };
+
   // Отрисовка компонента верификации
   if (currentState === 'verify' && verifyFile && imageUrl) {
     return (
@@ -131,6 +150,35 @@ function App() {
             onSave={handleSaveVerification}
             onCancel={handleCancelVerification}
           />
+        </div>
+      </div>
+    );
+  }
+
+  // Отрисовка конструктора отчёта
+  if (currentState === 'report') {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Заголовок страницы */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Конструктор отчёта
+              </h1>
+              <p className="text-gray-600">
+                Создайте отчёт по обработанным документам
+              </p>
+            </div>
+            <button
+              onClick={handleBackToMain}
+              className="px-4 py-2 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              ← Назад к документам
+            </button>
+          </div>
+
+          <ReportConstructor documents={getReportData()} />
         </div>
       </div>
     );
@@ -155,12 +203,42 @@ function App() {
           maxFileSize={100 * 1024 * 1024} // 100MB
         />
 
+        {/* Кнопка генерации отчёта - доступна всегда */}
+        <div className="mt-8 text-center">
+          <button
+            onClick={handleOpenReport}
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Перейти к конструктору отчёта
+          </button>
+          <p className="text-sm text-gray-500 mt-2">
+            {processedFiles.length > 0 
+              ? `Доступно ${processedFiles.length} документов для анализа` 
+              : 'Будут использованы тестовые данные для демонстрации'
+            }
+          </p>
+        </div>
+
         {/* Список обработанных файлов с результатами */}
         {processedFiles.length > 0 && (
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Обработанные документы ({processedFiles.length})
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Обработанные документы ({processedFiles.length})
+              </h2>
+              <button
+                onClick={handleOpenReport}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Генерировать отчёт</span>
+              </button>
+            </div>
             <div className="bg-white rounded-lg shadow p-6">
               <div className="space-y-3">
                 {processedFiles.map((processedFile, index) => (

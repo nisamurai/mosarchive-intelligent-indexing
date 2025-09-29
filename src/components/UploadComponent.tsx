@@ -3,7 +3,7 @@ import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 // Интерфейс для извлеченных атрибутов
-interface ExtractedAttributes {
+export interface ExtractedAttributes {
   fio: string;
   date: string;
   address: string;
