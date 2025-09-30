@@ -105,7 +105,7 @@ export const usePlaceholders = () => {
             completed: "Uploaded",
             processing: "Processing",
             error: "Error",
-            pending: "Waiting for preprocessing"
+            pending: "Ожидает предобработки"
           },
           report_descriptions: {}
         });

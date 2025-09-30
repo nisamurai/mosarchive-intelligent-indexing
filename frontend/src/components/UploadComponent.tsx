@@ -68,6 +68,7 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
   const [error, setError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const directoryInputRef = useRef<HTMLInputElement>(null);
 
   // Обработчик drag and drop
   const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -221,6 +222,18 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
           onChange={handleFileSelect}
           className="hidden"
         />
+        
+        <input
+          ref={directoryInputRef}
+          type="file"
+          multiple
+          webkitdirectory=""
+          directory=""
+          accept=".jpg,.jpeg,.tiff,.pdf"
+          onChange={handleFileSelect}
+          className="hidden"
+          id="directory-input"
+        />
 
         <div className="flex flex-col items-center space-y-4">
           <Upload className={cn(
@@ -241,6 +254,20 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
             <p className="text-sm text-gray-500">
               Максимум {maxFiles} файлов, до {Math.round(maxFileSize / (1024 * 1024))}MB каждый
             </p>
+            <div className="mt-3 flex space-x-2">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+              >
+                Выбрать файлы
+              </button>
+              <button
+                onClick={() => directoryInputRef.current?.click()}
+                className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+              >
+                Выбрать папку
+              </button>
+            </div>
           </div>
         </div>
       </div>

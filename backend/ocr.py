@@ -14,7 +14,7 @@ from datetime import datetime
 
 # Импортируем функции OCR из существующего модуля
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
 from image_processing import recognize_text
 
 # Настройка логирования

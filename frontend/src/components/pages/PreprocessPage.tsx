@@ -4,7 +4,7 @@ import { Stepper } from '../ui/stepper';
 import { Button } from '../ui/button';
 import { useNavigation } from '../../hooks/useNavigation';
 import { useProcessing } from '../../contexts/ProcessingContext';
-import { Settings, Image, RotateCcw, Zap, ArrowRight } from 'lucide-react';
+import { Settings, Image, RotateCcw, Zap, ArrowRight, CheckCircle } from 'lucide-react';
 import { ProcessingStep } from '../../types/navigation';
 
 const PreprocessPage: React.FC = () => {
@@ -215,6 +215,62 @@ const PreprocessPage: React.FC = () => {
             <CardContent>
               <div className="text-center">
                 <p className="text-lg font-medium text-blue-600">{currentProcess}</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Результаты предобработки - двухколоночный интерфейс */}
+        {navigationState.completedSteps.includes('preprocess') && files.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Результаты предобработки</CardTitle>
+              <CardDescription>
+                Сравнение изображений до и после обработки
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {files.map((file, index) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <h4 className="font-medium text-gray-900 mb-4">{file.file.name}</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Изображение до обработки */}
+                      <div className="space-y-2">
+                        <h5 className="text-sm font-medium text-gray-700">До обработки</h5>
+                        <div className="border rounded-lg p-4 bg-gray-50 min-h-[200px] flex items-center justify-center">
+                          <div className="text-center text-gray-500">
+                            <Image className="w-12 h-12 mx-auto mb-2" />
+                            <p className="text-sm">Оригинальное изображение</p>
+                            <p className="text-xs text-gray-400">
+                              {(file.file.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Изображение после обработки */}
+                      <div className="space-y-2">
+                        <h5 className="text-sm font-medium text-gray-700">После обработки</h5>
+                        <div className="border rounded-lg p-4 bg-green-50 min-h-[200px] flex items-center justify-center">
+                          <div className="text-center text-green-600">
+                            <CheckCircle className="w-12 h-12 mx-auto mb-2" />
+                            <p className="text-sm">Обработанное изображение</p>
+                            <p className="text-xs text-green-500">
+                              Применены: {Object.entries(selectedOptions)
+                                .filter(([_, enabled]) => enabled)
+                                .map(([key, _]) => {
+                                  const option = preprocessingOptions.find(opt => opt.id === key);
+                                  return option?.title;
+                                })
+                                .join(', ')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

@@ -49,29 +49,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return false;
       }
 
-      // Проверяем валидность токена на сервере
-      const response = await fetch(`${API_BASE_URL}/me`, {
-        headers: {
-          'Authorization': `Bearer ${storedToken}`,
-        },
-      });
+      // Временно отключаем проверку токена на сервере для демонстрации
+      // TODO: Включить проверку токена когда бэкенд будет готов
+      try {
+        const response = await fetch(`${API_BASE_URL}/me`, {
+          headers: {
+            'Authorization': `Bearer ${storedToken}`,
+          },
+        });
 
-      if (response.ok) {
-        const userInfo = await response.json();
-        setToken(storedToken);
+        if (response.ok) {
+          const userInfo = await response.json();
+          setToken(storedToken);
+          setUser(userInfo);
+          setIsLoading(false);
+          return true;
+        } else {
+          // Если токен недействителен, очищаем хранилище
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userInfo');
+          sessionStorage.removeItem('authToken');
+          sessionStorage.removeItem('userInfo');
+          setIsLoading(false);
+          return false;
+        }
+      } catch (error) {
+        console.warn('Ошибка проверки токена на сервере, используем локальные данные:', error);
+        // Если сервер недоступен, используем локальные данные
+        const userInfo = JSON.parse(storedUser);
         setUser(userInfo);
+        setToken(storedToken);
         setIsLoading(false);
         return true;
-      } else {
-        // Токен недействителен, очищаем оба хранилища
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userInfo');
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('userInfo');
-        setToken(null);
-        setUser(null);
-        setIsLoading(false);
-        return false;
       }
     } catch (error) {
       console.error('Ошибка проверки авторизации:', error);

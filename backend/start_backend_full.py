@@ -10,7 +10,7 @@ import os
 
 # Добавляем путь к модулям проекта
 sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend', 'src', 'lib'))
 
 if __name__ == "__main__":
     print("=" * 80)
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     
     try:
         uvicorn.run(
-            "backend.main:app",
+            "main:app",
             host="0.0.0.0",
             port=8000,
             reload=True,  # Автоматическая перезагрузка при изменении кода

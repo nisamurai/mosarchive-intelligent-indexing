@@ -14,7 +14,7 @@ from datetime import datetime
 
 # Импортируем функции предобработки из существующего модуля
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
 from image_processing import ImageProcessor
 
 # Настройка логирования

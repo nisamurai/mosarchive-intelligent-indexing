@@ -60,7 +60,7 @@ PROCESSING_STATUS_PLACEHOLDERS = {
     "completed": "Uploaded",
     "processing": "Processing", 
     "error": "Error",
-    "pending": "Waiting for preprocessing"
+    "pending": "Ожидает предобработки"
 }
 
 # Заглушки для описаний полей отчёта

@@ -14,7 +14,7 @@ from datetime import datetime
 
 # Импортируем функции извлечения атрибутов из существующего модуля
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
 from attribute_recognition import (
     extract_attributes, 
     extract_attributes_with_positions, 

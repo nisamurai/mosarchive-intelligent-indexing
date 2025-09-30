@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import AuthPage from './AuthPage';
+import LoginPage from './pages/LoginPage';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -23,7 +23,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // Если пользователь не авторизован, показываем страницу авторизации
   if (!isAuthenticated) {
-    return <AuthPage onAuthSuccess={() => {}} />;
+    return <LoginPage />;
   }
 
   // Если пользователь авторизован, показываем защищенный контент

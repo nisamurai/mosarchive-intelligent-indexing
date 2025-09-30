@@ -13,7 +13,7 @@ import sys
 from datetime import datetime
 
 # Добавляем путь к модулям проекта
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
 
 # Импортируем все модули
 from upload import router as upload_router
