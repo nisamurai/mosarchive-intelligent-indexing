@@ -8,6 +8,7 @@ import { CheckCircle, Edit, Eye, FileText, ArrowRight, ZoomIn, ZoomOut, RotateCc
 import { ProcessingStep } from '../../types/navigation';
 import { usePlaceholders } from '../../hooks/usePlaceholders';
 import { AttributeHighlightedText, AttributeList } from '../AttributeHighlightedText';
+import ImagePreview from '../common/ImagePreview';
 
 const VerifyPage: React.FC = () => {
   const { navigationState, markStepCompleted, goToNextStep, canGoToStep } = useNavigation();
@@ -18,6 +19,7 @@ const VerifyPage: React.FC = () => {
   const [imageScale, setImageScale] = React.useState(1);
   const [imageRotation, setImageRotation] = React.useState(0);
   const [showAttributes, setShowAttributes] = React.useState(false);
+  const [editedTexts, setEditedTexts] = React.useState<{ [key: number]: string }>({});
   const { getTextPlaceholder } = usePlaceholders();
 
   // Моковые данные для демонстрации атрибутов
@@ -47,6 +49,30 @@ const VerifyPage: React.FC = () => {
 
   const handleVerifyFile = (fileName: string) => {
     setVerifiedFiles(prev => new Set([...prev, fileName]));
+  };
+
+  // Обработчик изменения текста
+  const handleTextChange = (fileIndex: number, newText: string) => {
+    setEditedTexts(prev => ({
+      ...prev,
+      [fileIndex]: newText
+    }));
+  };
+
+  // Получить текущий текст (отредактированный или оригинальный)
+  const getCurrentText = (fileIndex: number, originalText: string) => {
+    return editedTexts[fileIndex] !== undefined ? editedTexts[fileIndex] : originalText;
+  };
+
+  // Сохранить изменения
+  const handleSaveChanges = (fileIndex: number) => {
+    const file = pendingFiles[fileIndex];
+    if (file && editedTexts[fileIndex] !== undefined) {
+      // Здесь можно добавить логику сохранения в контекст или API
+      console.log('Сохранение изменений для файла:', file.file.name, editedTexts[fileIndex]);
+      // Добавляем файл в список проверенных
+      setVerifiedFiles(prev => new Set([...prev, file.file.name]));
+    }
   };
 
   const handleZoomIn = () => {
@@ -234,16 +260,12 @@ const VerifyPage: React.FC = () => {
                               transformOrigin: 'center'
                             }}
                           >
-                            <div className="text-center text-gray-500 p-8">
-                              <FileText className="w-16 h-16 mx-auto mb-4" />
-                              <p className="text-lg font-medium">Изображение документа</p>
-                              <p className="text-sm text-gray-400 mt-2">
-                                {file.file.name}
-                              </p>
-                              <p className="text-xs text-gray-400 mt-1">
-                                Масштаб: {Math.round(imageScale * 100)}% | Поворот: {imageRotation}°
-                              </p>
-                            </div>
+                            <ImagePreview 
+                              file={file.file}
+                              className="max-w-full max-h-full"
+                              maxHeight={300}
+                              maxWidth={400}
+                            />
                           </div>
                         </div>
                       </div>
@@ -281,12 +303,34 @@ const VerifyPage: React.FC = () => {
                             </div>
                             <textarea
                               className="w-full h-64 p-3 border-2 border-blue-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50 transition-all duration-200"
-                              defaultValue={file.recognizedText || getTextPlaceholder('ocr_placeholder')}
+                              value={getCurrentText(index, file.recognizedText || getTextPlaceholder('ocr_placeholder'))}
+                              onChange={(e) => handleTextChange(index, e.target.value)}
                               placeholder={getTextPlaceholder('edit_placeholder')}
                             />
-                            <div className="flex items-center justify-between text-xs text-gray-500">
-                              <span>Используйте Ctrl+Z для отмены изменений</span>
-                              <span>Нажмите "Просмотр" для выхода из режима редактирования</span>
+                            <div className="flex items-center justify-between">
+                              <div className="text-xs text-gray-500">
+                                <span>Используйте Ctrl+Z для отмены изменений</span>
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleSaveChanges(index)}
+                                  disabled={editedTexts[index] === undefined}
+                                  className="text-green-600 border-green-300 hover:bg-green-50"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  Сохранить
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setIsEditing(false)}
+                                >
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  Просмотр
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ) : showAttributes ? (
@@ -297,7 +341,7 @@ const VerifyPage: React.FC = () => {
                             </div>
                             <div className="max-h-64 overflow-y-auto bg-green-50 border-2 border-green-200 rounded-lg p-3 transition-all duration-200">
                               <AttributeHighlightedText
-                                text={file.recognizedText || getTextPlaceholder('ocr_placeholder')}
+                                text={getCurrentText(index, file.recognizedText || getTextPlaceholder('ocr_placeholder'))}
                                 attributes={mockAttributesWithPositions}
                               />
                             </div>
@@ -309,7 +353,7 @@ const VerifyPage: React.FC = () => {
                         ) : (
                           <div className="max-h-64 overflow-y-auto bg-white border rounded-lg p-3">
                             <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono leading-relaxed">
-                              {file.recognizedText || getTextPlaceholder('ocr_placeholder')}
+                              {getCurrentText(index, file.recognizedText || getTextPlaceholder('ocr_placeholder'))}
                             </pre>
                           </div>
                         )}
@@ -343,7 +387,7 @@ const VerifyPage: React.FC = () => {
                   <Edit className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="font-medium text-gray-900">Отредактировано</h3>
-                <p className="text-2xl font-bold text-blue-600">0</p>
+                <p className="text-2xl font-bold text-blue-600">{Object.keys(editedTexts).length}</p>
                 <p className="text-sm text-gray-500">документов</p>
               </div>
               
