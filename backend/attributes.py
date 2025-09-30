@@ -12,9 +12,7 @@ import logging
 import time
 from datetime import datetime
 
-# Импортируем функции извлечения атрибутов из существующего модуля
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
+# Импортируем функции извлечения атрибутов из модуля
 from attribute_recognition import (
     extract_attributes, 
     extract_attributes_with_positions, 
