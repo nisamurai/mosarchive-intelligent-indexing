@@ -6,6 +6,7 @@ import { useNavigation } from '../../hooks/useNavigation';
 import { useProcessing } from '../../contexts/ProcessingContext';
 import { Settings, Image, RotateCcw, Zap, ArrowRight, CheckCircle } from 'lucide-react';
 import { ProcessingStep } from '../../types/navigation';
+import ImagePreview from '../common/ImagePreview';
 
 const PreprocessPage: React.FC = () => {
   const { navigationState, markStepCompleted, goToNextStep, canGoToStep } = useNavigation();
@@ -238,33 +239,38 @@ const PreprocessPage: React.FC = () => {
                       {/* Изображение до обработки */}
                       <div className="space-y-2">
                         <h5 className="text-sm font-medium text-gray-700">До обработки</h5>
-                        <div className="border rounded-lg p-4 bg-gray-50 min-h-[200px] flex items-center justify-center">
-                          <div className="text-center text-gray-500">
-                            <Image className="w-12 h-12 mx-auto mb-2" />
-                            <p className="text-sm">Оригинальное изображение</p>
-                            <p className="text-xs text-gray-400">
-                              {(file.file.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
-                          </div>
-                        </div>
+                        <ImagePreview 
+                          file={file.file} 
+                          maxHeight={200} 
+                          maxWidth={300}
+                          className="min-h-[200px]"
+                        />
                       </div>
                       
                       {/* Изображение после обработки */}
                       <div className="space-y-2">
                         <h5 className="text-sm font-medium text-gray-700">После обработки</h5>
-                        <div className="border rounded-lg p-4 bg-green-50 min-h-[200px] flex items-center justify-center">
-                          <div className="text-center text-green-600">
-                            <CheckCircle className="w-12 h-12 mx-auto mb-2" />
-                            <p className="text-sm">Обработанное изображение</p>
-                            <p className="text-xs text-green-500">
-                              Применены: {Object.entries(selectedOptions)
-                                .filter(([_, enabled]) => enabled)
-                                .map(([key, _]) => {
-                                  const option = preprocessingOptions.find(opt => opt.id === key);
-                                  return option?.title;
-                                })
-                                .join(', ')}
-                            </p>
+                        <div className="relative">
+                          <ImagePreview 
+                            file={file.file} 
+                            maxHeight={200} 
+                            maxWidth={300}
+                            className="min-h-[200px]"
+                          />
+                          {/* Индикатор примененных обработок */}
+                          <div className="absolute top-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                            <CheckCircle className="w-3 h-3 inline mr-1" />
+                            Обработано
+                          </div>
+                          {/* Список примененных обработок */}
+                          <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+                            {Object.entries(selectedOptions)
+                              .filter(([_, enabled]) => enabled)
+                              .map(([key, _]) => {
+                                const option = preprocessingOptions.find(opt => opt.id === key);
+                                return option?.title;
+                              })
+                              .join(', ') || 'Обработка не применена'}
                           </div>
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { ProcessingProvider } from './contexts/ProcessingContext';
@@ -11,15 +11,64 @@ import OcrPage from './components/pages/OcrPage';
 import VerifyPage from './components/pages/VerifyPage';
 import ReportPage from './components/pages/ReportPage';
 import StatsPage from './components/pages/StatsPage';
+import { useAuth } from './contexts/AuthContext';
+import { useEffect } from 'react';
 import './index.css';
+
+// Компонент для редиректа авторизованных пользователей на страницу загрузки
+const AuthRedirect: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Проверяем, была ли это перезагрузка страницы
+    const isPageReload = sessionStorage.getItem('pageReloaded') === 'true';
+    
+    // Если пользователь авторизован, это перезагрузка страницы и НЕ находится на странице загрузки
+    if (!isLoading && isAuthenticated && isPageReload && location.pathname !== '/upload') {
+      navigate('/upload', { replace: true });
+    }
+    
+    // Очищаем флаг после обработки
+    if (isPageReload) {
+      sessionStorage.removeItem('pageReloaded');
+    }
+  }, [isAuthenticated, isLoading, location.pathname, navigate]);
+
+  return null;
+};
 
 // Главный компонент приложения с роутингом
 function App() {
+  // Устанавливаем флаг перезагрузки при выгрузке страницы
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem('pageReloaded', 'true');
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // F5 или Ctrl+R
+      if (event.key === 'F5' || (event.ctrlKey && event.key === 'r')) {
+        sessionStorage.setItem('pageReloaded', 'true');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <NavigationProvider>
         <ProcessingProvider>
           <Router>
+            <AuthRedirect />
             <Routes>
               {/* Страница авторизации - без Layout */}
               <Route path="/login" element={<LoginPage />} />

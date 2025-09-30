@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Stepper } from '../ui/stepper';
 import { Button } from '../ui/button';
 import { useNavigation } from '../../hooks/useNavigation';
-import { useProcessing } from '../../contexts/ProcessingContext';
+import { useProcessing } from '../../hooks/useProcessing';
 import UploadComponent from '../UploadComponent';
 import ProgressBar from '../layout/ProgressBar';
 import { ProcessingStep } from '../../types/navigation';
@@ -12,13 +12,11 @@ import { usePlaceholders } from '../../hooks/usePlaceholders';
 
 const UploadPage: React.FC = () => {
   const { navigationState, markStepCompleted, goToNextStep, canGoToStep } = useNavigation();
-  const { addFiles, files } = useProcessing();
+  const { processFiles, files } = useProcessing();
   const { getProcessingStatus } = usePlaceholders();
 
   const handleUpload = (uploadedFiles: File[]) => {
-    addFiles(uploadedFiles);
-    // Помечаем шаг загрузки как завершенный
-    markStepCompleted('upload');
+    processFiles(uploadedFiles);
   };
 
   const handleNextStep = () => {

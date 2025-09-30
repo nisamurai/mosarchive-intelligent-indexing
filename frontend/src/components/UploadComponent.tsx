@@ -97,6 +97,16 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
   const handleFileSelect = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     handleFiles(selectedFiles);
+    // Очищаем input для возможности повторного выбора тех же файлов
+    e.target.value = '';
+  }, []);
+
+  // Обработчик выбора папки через input
+  const handleDirectorySelect = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    handleFiles(selectedFiles);
+    // Очищаем input для возможности повторного выбора той же папки
+    e.target.value = '';
   }, []);
 
   // Основная функция обработки файлов
@@ -181,7 +191,11 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
   }, [files, onUpload]);
 
   // Обработчик клика по зоне загрузки
-  const handleZoneClick = useCallback(() => {
+  const handleZoneClick = useCallback((e: React.MouseEvent) => {
+    // Проверяем, что клик не по кнопкам
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
     fileInputRef.current?.click();
   }, []);
 
@@ -227,10 +241,9 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
           ref={directoryInputRef}
           type="file"
           multiple
-          webkitdirectory=""
-          directory=""
+          {...({ webkitdirectory: "", directory: "" } as any)}
           accept=".jpg,.jpeg,.tiff,.pdf"
-          onChange={handleFileSelect}
+          onChange={handleDirectorySelect}
           className="hidden"
           id="directory-input"
         />
@@ -256,13 +269,19 @@ export const UploadComponent: React.FC<UploadComponentProps> = ({
             </p>
             <div className="mt-3 flex space-x-2">
               <button
-                onClick={() => fileInputRef.current?.click()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
                 className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
               >
                 Выбрать файлы
               </button>
               <button
-                onClick={() => directoryInputRef.current?.click()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  directoryInputRef.current?.click();
+                }}
                 className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
               >
                 Выбрать папку
