@@ -1,145 +1,96 @@
-#  MosArchive Intelligent Indexing | Сервис извлечения и индексирования информации из образов архивных документов
+# MosArchive Intelligent Indexing
 
 Веб-сервис с применением средств искусственного интеллекта для автоматизированного извлечения данных из образов архивных документов, их индексирования и наполнения базы данных.
+
+**Кроссплатформенное решение** - поддерживается работа на Windows и Linux.
+
+<div align="center">
+  <img src="resources/screen1.png" alt="Screenshot 1" width="45%" style="margin-right: 2%;">
+  <img src="resources/screen2.png" alt="Screenshot 2" width="45%">
+</div>
 
 ## Технологии
 
 - **Frontend**: React 19 + TypeScript
+- **Backend**: Python + FastAPI
 - **Сборщик**: Vite
 - **Стили**: Tailwind CSS
 - **Иконки**: Lucide React
 - **Пакетный менеджер**: Bun
 
-## Установка и запуск
+В соответствии с требованиями информационной безопасности, система разработана для работы **в закрытом контуре без доступа к интернету**.
 
-1. Перейдите в директорию проекта:
+## Быстрый старт
+
+### Установка Bun
+
 ```bash
-cd mosarchive-intelligent-indexing
+# Windows (PowerShell)
+irm bun.sh/install.ps1 | iex
+
+# macOS/Linux
+curl -fsSL https://bun.sh/install | bash
 ```
 
-2. Установите зависимости:
+### Установка зависимостей
+
+1. **Frontend зависимости:**
 ```bash
+bun upgrade
+bun update
 bun install
 ```
 
-3. Запустите сервер разработки (выберите один из вариантов):
+2. **Backend зависимости (Python 3.8+):**
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-**Вариант 1 (рекомендуется):**
+### Запуск приложения
+
+1. **Backend API:**
+```bash
+python start_backend_full.py
+```
+
+2. **Frontend (в другом терминале):**
 ```bash
 bunx vite
 ```
 
-**Вариант 2 (через скрипт):**
-```bash
-bun run dev
-```
+3. Откройте `http://localhost:5173`
 
-**Вариант 3 (альтернативный порт):**
-```bash
-bunx vite --port 3000
-```
-
-4. Откройте браузер и перейдите по адресу:
-   - `http://localhost:5173` (стандартный порт)
-   - `http://localhost:3000` (если используете альтернативный порт)
-
-## Компонент UploadComponent
-
-### Описание
-
-React-компонент для загрузки документов с поддержкой:
-- Drag-and-drop интерфейса
-- Выбора одиночных и множественных файлов
-- Валидации форматов (JPG, JPEG, TIFF, PDF)
-- Прогресс-бара загрузки
-- Обработки ошибок
-
-### Использование
-
-```tsx
-import UploadComponent from './components/UploadComponent';
-
-function App() {
-  const handleUpload = (files: File[]) => {
-    console.log('Загружены файлы:', files);
-    // Ввызов ИИ для обработки документов
-  };
-
-  return (
-    <UploadComponent 
-      onUpload={handleUpload}
-      maxFiles={20}
-      maxFileSize={100 * 1024 * 1024} // 100MB
-    />
-  );
-}
-```
-
-### Пропсы
-
-- `onUpload: (files: File[]) => void` - callback функция, вызываемая после загрузки файлов
-- `maxFiles?: number` - максимальное количество файлов (по умолчанию 10)
-- `maxFileSize?: number` - максимальный размер файла в байтах (по умолчанию 50MB)
-- `className?: string` - дополнительные CSS классы
-
-### Состояние компонента
-
-```typescript
-interface FileWithProgress {
-  file: File;           // Исходный файл
-  id: string;           // Уникальный идентификатор
-  progress: number;     // Прогресс загрузки (0-100)
-  status: 'pending' | 'uploading' | 'completed' | 'error';
-  error?: string;       // Сообщение об ошибке
-}
-```
-
-### Обработчики событий
-
-- `handleDragOver` - обработка перетаскивания над зоной
-- `handleDragLeave` - обработка выхода из зоны перетаскивания
-- `handleDrop` - обработка сброса файлов
-- `handleFileSelect` - обработка выбора файлов через input
-- `handleFiles` - основная логика обработки файлов
-- `removeFile` - удаление файла из списка
-- `handleUpload` - запуск процесса загрузки
-
-## Структура проекта
+## Документация
 
 ```
-src/
-├── components/
-│   └── UploadComponent.tsx    # Основной компонент загрузки
-├── lib/
-│   └── utils.ts              # Утилиты (cn функция для Tailwind)
-├── App.tsx                   # Главный компонент приложения
-├── main.tsx                  # Точка входа
-└── index.css                 # Глобальные стили
+documentation/
+├── INSTALLATION.md          # Подробные инструкции по установке
+├── ARCHITECTURE.md          # Архитектура системы
+├── COMPONENTS.md            # Компоненты
+├── DEVELOPMENT.md           # Разработка
+├── DOCKER.md               # Docker-инфраструктура
+├── UI_ARCHITECTURE.md      # UI-архитектура
+├── frontend/               # Frontend модули
+└── backend/                # Backend модули
 ```
 
-## Особенности реализации
+### Основные разделы
+- [Установка и запуск](documentation/INSTALLATION.md)
+- [Архитектура системы](documentation/ARCHITECTURE.md)
+- [Компоненты](documentation/COMPONENTS.md)
+- [Разработка](documentation/DEVELOPMENT.md)
+- [Docker-инфраструктура](documentation/DOCKER.md)
+- [UI-архитектура](documentation/UI_ARCHITECTURE.md)
 
-1. **Валидация файлов**: Проверка формата и размера файлов
-2. **Прогресс-бар**: Визуализация процесса загрузки
-3. **Обработка ошибок**: Понятные сообщения об ошибках
-4. **Адаптивный дизайн**: Работает на всех устройствах
-5. **Accessibility**: 
-   - Поддержка клавиатурной навигации (Tab, Enter, Пробел)
-   - ARIA-атрибуты для скрин-ридеров
-   - Семантическая разметка
-   - Focus-индикаторы для кнопок
+### Frontend модули
+- [Обработка изображений](documentation/frontend/README_image_processing.md)
+- [Атрибутивное распознавание](documentation/frontend/README_attribute_recognition.md)
+- [Верификация результатов](documentation/frontend/README_verification_module.md)
+- [Компонент статистики](documentation/frontend/README_statistics_component.md)
+- [Система авторизации](documentation/frontend/README_auth.md)
+- [Конструктор отчетов](documentation/frontend/README_report_constructor.md)
 
-## Заглушки для ИИ
-
-В текущей версии все вызовы ИИ заменены заглушками:
-- Загрузка файлов симулируется с задержкой
-- Обработка документов выводится в консоль
-- В будущем здесь будут реальные вызовы API ИИ
-
-## Сборка для продакшена
-
-```bash
-bun run build
-```
-
-Собранные файлы будут в папке `dist/`.
+### Backend модули
+- [Backend API](documentation/backend/README.md)
+- [Модуль заглушек](documentation/backend/README_placeholders.md)

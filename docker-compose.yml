@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Backend service (Python FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mosarchive-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Монтируем директории для сохранения данных
+      - ./backend/uploads:/app/uploads
+      - ./backend/processed:/app/processed
+      - ./backend/ocr_results:/app/ocr_results
+      - ./backend/attribute_results:/app/attribute_results
+      - ./backend/reports:/app/reports
+      - ./backend/logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mosarchive-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Создаем сеть для связи между сервисами
+networks:
+  default:
+    name: mosarchive-network
