@@ -6,6 +6,7 @@ import { useNavigation } from '../../hooks/useNavigation';
 import { useProcessing } from '../../contexts/ProcessingContext';
 import { CheckCircle, Edit, Eye, FileText, ArrowRight } from 'lucide-react';
 import { ProcessingStep } from '../../types/navigation';
+import { usePlaceholders } from '../../hooks/usePlaceholders';
 
 const VerifyPage: React.FC = () => {
   const { navigationState, markStepCompleted, goToNextStep, canGoToStep } = useNavigation();
@@ -13,6 +14,7 @@ const VerifyPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = React.useState<number | null>(null);
   const [isEditing, setIsEditing] = React.useState(false);
   const [verifiedFiles, setVerifiedFiles] = React.useState<Set<string>>(new Set());
+  const { getTextPlaceholder } = usePlaceholders();
 
   const handleStartVerification = () => {
     // Здесь будет логика верификации
@@ -145,13 +147,13 @@ const VerifyPage: React.FC = () => {
                       {isEditing ? (
                         <textarea
                           className="w-full h-64 p-3 border rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          defaultValue={file.recognizedText || 'Текст будет доступен после OCR обработки...'}
-                          placeholder="Введите текст для редактирования..."
+                          defaultValue={file.recognizedText || getTextPlaceholder('ocr_placeholder')}
+                          placeholder={getTextPlaceholder('edit_placeholder')}
                         />
                       ) : (
                         <div className="max-h-64 overflow-y-auto">
                           <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono leading-relaxed">
-                            {file.recognizedText || 'Текст будет доступен после OCR обработки...'}
+                            {file.recognizedText || getTextPlaceholder('ocr_placeholder')}
                           </pre>
                         </div>
                       )}

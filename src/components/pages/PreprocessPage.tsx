@@ -12,24 +12,49 @@ const PreprocessPage: React.FC = () => {
   const { files } = useProcessing();
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentProcess, setCurrentProcess] = useState<string>('');
+  const [selectedOptions, setSelectedOptions] = useState<{[key: string]: boolean}>({
+    deskew: true,
+    contrast: true,
+    denoise: true,
+    binarization: true
+  });
+
+  const handleOptionChange = (optionId: string, checked: boolean) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [optionId]: checked
+    }));
+  };
 
   const handleStartPreprocessing = () => {
     setIsProcessing(true);
     setCurrentProcess('Инициализация предобработки...');
     
-    // Симуляция предобработки с отображением текущего процесса
-    const processes = [
-      'Выравнивание документов...',
-      'Коррекция контрастности...',
-      'Шумоподавление...',
-      'Бинаризация изображений...',
-      'Финализация обработки...'
-    ];
+    // Получаем только выбранные процессы
+    const selectedProcesses = [];
+    
+    if (selectedOptions.deskew) {
+      selectedProcesses.push('Выравнивание документов...');
+    }
+    if (selectedOptions.contrast) {
+      selectedProcesses.push('Коррекция контрастности...');
+    }
+    if (selectedOptions.denoise) {
+      selectedProcesses.push('Шумоподавление...');
+    }
+    if (selectedOptions.binarization) {
+      selectedProcesses.push('Бинаризация изображений...');
+    }
+    
+    // Добавляем финализацию только если есть выбранные процессы
+    if (selectedProcesses.length > 0) {
+      selectedProcesses.push('Финализация обработки...');
+    }
     
     let processIndex = 0;
     const processInterval = setInterval(() => {
-      if (processIndex < processes.length) {
-        setCurrentProcess(processes[processIndex]);
+      if (processIndex < selectedProcesses.length) {
+        setCurrentProcess(selectedProcesses[processIndex]);
         processIndex++;
       } else {
         clearInterval(processInterval);
@@ -166,7 +191,8 @@ const PreprocessPage: React.FC = () => {
                     <div className="flex-shrink-0">
                       <input
                         type="checkbox"
-                        defaultChecked
+                        checked={selectedOptions[option.id]}
+                        onChange={(e) => handleOptionChange(option.id, e.target.checked)}
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
                     </div>
@@ -201,7 +227,7 @@ const PreprocessPage: React.FC = () => {
               onClick={handleStartPreprocessing}
               size="lg"
               className="px-8 py-3"
-              disabled={isProcessing}
+              disabled={isProcessing || Object.values(selectedOptions).every(option => !option)}
             >
               {isProcessing ? 'Обработка...' : 'Запустить предобработку'}
             </Button>

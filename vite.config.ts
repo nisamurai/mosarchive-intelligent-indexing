@@ -8,6 +8,13 @@ export default defineConfig({
   server: {
     port: 5173, // Фиксированный порт для разработки
     host: true, // Доступ с других устройств в сети
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   preview: {
     port: 4173, // Порт для preview режима

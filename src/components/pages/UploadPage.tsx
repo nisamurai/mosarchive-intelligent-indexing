@@ -8,10 +8,12 @@ import UploadComponent from '../UploadComponent';
 import ProgressBar from '../layout/ProgressBar';
 import { ProcessingStep } from '../../types/navigation';
 import { ArrowRight } from 'lucide-react';
+import { usePlaceholders } from '../../hooks/usePlaceholders';
 
 const UploadPage: React.FC = () => {
   const { navigationState, markStepCompleted, goToNextStep, canGoToStep } = useNavigation();
   const { addFiles, files } = useProcessing();
+  const { getProcessingStatus } = usePlaceholders();
 
   const handleUpload = (uploadedFiles: File[]) => {
     addFiles(uploadedFiles);
@@ -119,10 +121,7 @@ const UploadPage: React.FC = () => {
                         file.processingStatus === 'error' ? 'bg-red-100 text-red-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {file.processingStatus === 'completed' ? 'Загружено' :
-                         file.processingStatus === 'processing' ? 'Обработка' :
-                         file.processingStatus === 'error' ? 'Ошибка' :
-                         'Ожидание'}
+                        {getProcessingStatus(file.processingStatus)}
                       </span>
                     </div>
                   </div>

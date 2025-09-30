@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
+import { usePlaceholders } from '../hooks/usePlaceholders';
 
 interface LoginFormProps {
   onLogin: (username: string, password: string, rememberMe?: boolean) => Promise<void>;
@@ -18,6 +19,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     username: '',
     password: ''
   });
+  const { getTextPlaceholder } = usePlaceholders();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -111,7 +113,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                   } placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm`}
-                  placeholder="Введите логин"
+                  placeholder={getTextPlaceholder('login_placeholder')}
                 />
               </div>
               {validationErrors.username && (
@@ -141,7 +143,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                   } placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm`}
-                  placeholder="Введите пароль"
+                  placeholder={getTextPlaceholder('password_placeholder')}
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   <button

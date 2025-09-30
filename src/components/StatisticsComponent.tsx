@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, FileText, TrendingUp, AlertTriangle, RefreshCw, Clock } from 'lucide-react';
+import { usePlaceholders } from '../hooks/usePlaceholders';
 
 // Интерфейс для статистики обработки
 interface ProcessingStatistics {
@@ -29,7 +30,7 @@ interface StatisticsComponentProps {
   refreshInterval?: number; // в миллисекундах
 }
 
-// Функция для генерации заглушечных данных статистики
+// Функция для генерации заглушечных данных статистики (fallback)
 const generateMockStatistics = (): ProcessingStatistics => {
   return {
     processed_count: Math.floor(Math.random() * 50) + 10, // 10-60 документов
@@ -43,7 +44,7 @@ const generateMockStatistics = (): ProcessingStatistics => {
   };
 };
 
-// Функция для генерации данных динамики за последние 7 дней
+// Функция для генерации данных динамики за последние 7 дней (fallback)
 const generateMockDailyStats = (): DailyStats[] => {
   const days: DailyStats[] = [];
   const today = new Date();
@@ -200,16 +201,36 @@ export const StatisticsComponent: React.FC<StatisticsComponentProps> = ({
   const [dailyStats, setDailyStats] = useState<DailyStats[]>(generateMockDailyStats());
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const { getMockStatistics, getMockDailyStatistics } = usePlaceholders();
 
   // Функция обновления статистики
   const refreshStatistics = async () => {
     setIsRefreshing(true);
     
-    // Симуляция задержки загрузки данных
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // Пытаемся получить данные с бэкенда
+      const [mockStats, mockDailyStats] = await Promise.all([
+        getMockStatistics(),
+        getMockDailyStatistics()
+      ]);
+      
+      if (mockStats) {
+        setStatistics({
+          ...mockStats,
+          last_updated: new Date(mockStats.last_updated)
+        });
+      }
+      
+      if (mockDailyStats) {
+        setDailyStats(mockDailyStats);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки статистики с бэкенда, используем fallback:', error);
+      // Fallback к локальным заглушкам
+      setStatistics(generateMockStatistics());
+      setDailyStats(generateMockDailyStats());
+    }
     
-    setStatistics(generateMockStatistics());
-    setDailyStats(generateMockDailyStats());
     setLastRefresh(new Date());
     setIsRefreshing(false);
   };

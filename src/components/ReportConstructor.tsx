@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Download, FileText, CheckSquare, Square, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 import { exportDocumentsToCSV, FIELD_TEMPLATES } from '../lib/csvExport';
 import type { ReportField, DocumentData } from '../lib/csvExport';
+import { usePlaceholders } from '../hooks/usePlaceholders';
 
 // Определение доступных полей отчёта
 const REPORT_FIELDS: ReportField[] = [
@@ -119,6 +120,7 @@ export const ReportConstructor: React.FC<ReportConstructorProps> = ({
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['basic', 'attributes']);
   const [previewMode, setPreviewMode] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const { getReportPlaceholder, getReportFieldDescription, getReportSampleData } = usePlaceholders();
 
   // Группируем поля по категориям
   const fieldsByCategory = useMemo(() => {
@@ -198,32 +200,16 @@ export const ReportConstructor: React.FC<ReportConstructorProps> = ({
       headers: fieldsInfo.map(f => f.label),
       sampleRow: selectedFields.map(fieldKey => {
         const sampleDoc = documents[0] || {};
-        switch (fieldKey) {
-          case 'fileName': return sampleDoc.fileName || 'документ.pdf';
-          case 'archiveCode': return sampleDoc.archiveCode || '01-0203-0745-000002';
-          case 'recognizedText': return 'Распознанный текст документа...';
-          case 'archiveId': return sampleDoc.archiveId || '1';
-          case 'fund': return sampleDoc.fund || '203';
-          case 'opis': return sampleDoc.opis || '745';
-          case 'delo': return sampleDoc.delo || '2';
-          case 'fio': return sampleDoc.fio || 'Иванов И.И.';
-          case 'date': return sampleDoc.date || '15.03.2024';
-          case 'documentNumber': return sampleDoc.documentNumber || '12345';
-          case 'address': return 'г. Москва, ул. Примерная, д. 1';
-          case 'organization': return 'Архивное учреждение';
-          case 'processingDate': return new Date().toLocaleString('ru-RU');
-          case 'fileSize': return '2.5 MB';
-          case 'status': return 'Обработан';
-          default: return 'Пример данных';
-        }
+        // Используем заглушки с бэкенда, если данные отсутствуют
+        return sampleDoc[fieldKey as keyof DocumentData] || getReportPlaceholder(fieldKey);
       })
     };
-  }, [selectedFields, documents]);
+  }, [selectedFields, documents, getReportPlaceholder]);
 
   // Создаём описание полей для заголовков
   const getFieldDescription = (fieldKey: string) => {
     const field = REPORT_FIELDS.find(f => f.key === fieldKey);
-    return field?.description || '';
+    return field?.description || getReportFieldDescription(fieldKey);
   };
 
   return (

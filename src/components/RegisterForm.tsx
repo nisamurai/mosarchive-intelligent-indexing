@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, User, Lock, Mail } from 'lucide-react';
+import { usePlaceholders } from '../hooks/usePlaceholders';
 
 interface RegisterFormProps {
   onRegister: (username: string, password: string, email?: string) => Promise<void>;
@@ -20,6 +21,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     confirmPassword: '',
     email: ''
   });
+  const { getTextPlaceholder } = usePlaceholders();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -138,7 +140,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
                   } placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm`}
-                  placeholder="Введите логин"
+                  placeholder={getTextPlaceholder('login_placeholder')}
                 />
               </div>
               {validationErrors.username && (
@@ -167,7 +169,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
                   } placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm`}
-                  placeholder="Введите email"
+                  placeholder={getTextPlaceholder('email_placeholder')}
                 />
               </div>
               {validationErrors.email && (
@@ -197,7 +199,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
                   } placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm`}
-                  placeholder="Введите пароль"
+                  placeholder={getTextPlaceholder('password_placeholder')}
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   <button
@@ -240,7 +242,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
                   } placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm`}
-                  placeholder="Подтвердите пароль"
+                  placeholder={getTextPlaceholder('confirm_password_placeholder')}
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   <button
