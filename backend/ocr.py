@@ -12,9 +12,7 @@ import logging
 import time
 from datetime import datetime
 
-# Импортируем функции OCR из существующего модуля
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
+# Импортируем функции OCR из модуля
 from image_processing import recognize_text
 
 # Настройка логирования
