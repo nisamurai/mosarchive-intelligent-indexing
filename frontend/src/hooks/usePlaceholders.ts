@@ -55,7 +55,7 @@ export const usePlaceholders = () => {
       try {
         setLoading(true);
         console.log('Загружаем заглушки с /api/placeholders/all...');
-        const response = await fetch('http://localhost:8000/api/placeholders/all');
+        const response = await fetch('http://85.159.231.195:8000/api/placeholders/all');
         
         console.log('Response status:', response.status);
         console.log('Response headers:', Object.fromEntries(response.headers.entries()));
@@ -140,7 +140,7 @@ export const usePlaceholders = () => {
   // Получить мок-статистику
   const getMockStatistics = async (): Promise<MockStatistics | null> => {
     try {
-      const response = await fetch('http://localhost:8000/api/placeholders/statistics/mock');
+      const response = await fetch('http://85.159.231.195:8000/api/placeholders/statistics/mock');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -164,7 +164,7 @@ export const usePlaceholders = () => {
   // Получить ежедневную статистику
   const getMockDailyStatistics = async (): Promise<DailyStats[]> => {
     try {
-      const response = await fetch('http://localhost:8000/api/placeholders/statistics/daily');
+      const response = await fetch('http://85.159.231.195:8000/api/placeholders/statistics/daily');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -194,7 +194,7 @@ export const usePlaceholders = () => {
   // Получить пример данных для отчёта
   const getReportSampleData = async (): Promise<ReportSampleData | null> => {
     try {
-      const response = await fetch('http://localhost:8000/api/placeholders/report/sample');
+      const response = await fetch('http://85.159.231.195:8000/api/placeholders/report/sample');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

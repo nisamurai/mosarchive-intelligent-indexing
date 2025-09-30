@@ -57,7 +57,13 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
         "http://127.0.0.1:5175",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "http://85.159.231.195:5173",  # Публичный IP
+        "http://85.159.231.195:5174",
+        "http://85.159.231.195:5175",
+        "http://85.159.231.195:3000",
+        "http://85.159.231.195:80",   # Nginx
+        "http://85.159.231.195",      # Nginx без порта
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -157,6 +163,7 @@ async def root():
     )
 
 @app.get("/health")
+@app.head("/health")
 async def health_check():
     """
     Проверка состояния API

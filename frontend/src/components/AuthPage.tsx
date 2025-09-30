@@ -13,7 +13,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://85.159.231.195:8000';
 
   const handleLogin = async (username: string, password: string, rememberMe?: boolean) => {
     setIsLoading(true);
