@@ -4,7 +4,7 @@
 
 ## Технологический стек
 
-- **Frontend**: React 18 + TypeScript
+- **Frontend**: React 19 + TypeScript
 - **Сборщик**: Vite
 - **Пакетный менеджер**: Bun
 - **Стили**: Tailwind CSS
