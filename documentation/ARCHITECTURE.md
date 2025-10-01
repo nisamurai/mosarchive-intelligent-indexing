@@ -21,12 +21,25 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                        Frontend (React)                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   Компоненты │  │     Хуки     │  │   Контексты  │       │
+│  │   Страницы   │  │   Компоненты │  │   Контексты  │       │
 │  │              │  │              │  │              │       │
-│  │ • UploadPage │  │ • usePlaceh. │  │ • AuthContext│       │
-│  │ • VerifyPage │  │ • useAuth    │  │ • Processing │       │
-│  │ • ReportCons.│  │ • useNav.    │  │              │       │
+│  │ • LoginPage  │  │ • UploadComp │  │ • AuthContext│       │
+│  │ • UploadPage │  │ • VerifyPage │  │ • Navigation │       │
+│  │ • Preprocess │  │ • ReportCons │  │ • Processing │       │
+│  │ • OcrPage    │  │ • Statistics │  │              │       │
+│  │ • VerifyPage │  │ • AuthPage   │  │              │       │
+│  │ • ReportPage │  │ • Header     │  │              │       │
+│  │ • StatsPage  │  │ • Layout     │  │              │       │
 │  └──────┬───────┘  └──────┬───────┘  └──────────────┘       │
+│         │                 │                                 │
+│  ┌──────▼──────┐   ┌──────▼──────┐  ┌──────────────┐        │
+│  │    Хуки     │   │   Утилиты   │  │     Типы     │        │
+│  │             │   │             │  │              │        │
+│  │ • useAuth   │   │ • csvExport │  │ • navigation │        │
+│  │ • useNav    │   │ • reportExp │  │ • processing │        │
+│  │ • usePlaceh │   │ • archiveUt │  │ • report     │        │
+│  │ • useProc   │   │ • docAdapter│  │              │        │
+│  └──────┬──────┘   └──────┬──────┘  └──────────────┘        │
 │         │                 │                                 │
 │         └────────┬────────┘                                 │
 │                  │ HTTP Requests                            │
@@ -36,19 +49,26 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                    Backend (FastAPI)                        │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │                   Main Application                     │ │
+│  │                   main.py                              │ │
+│  │              (FastAPI Application)                     │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                             │                               │
 │    ┌────────────────────────┼────────────────────────┐      │
 │    ▼            ▼           ▼           ▼            ▼      │
 │  ┌──────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐   │
-│  │Upload│  │Preproc.│  │  OCR   │  │Attrib. │  │Placeho.│   │
-│  │Module│  │Module  │  │ Module │  │Module  │  │Module  │   │
+│  │upload│  │preproc │  │   ocr  │  │attrib  │  │placeho │   │
+│  │.py   │  │.py     │  │.py     │  │.py     │  │.py     │   │
 │  └──────┘  └────────┘  └────────┘  └────────┘  └────┬───┘   │
+│                                                     │       │
+│  ┌──────┐  ┌────────┐  ┌────────┐  ┌────────┐       │       │
+│  │report│  │ stats  │  │  auth  │  │ image  │       │       │
+│  │.py   │  │.py     │  │_backend│  │_process│       │       │
+│  └──────┘  └────────┘  └────────┘  └────────┘       │       │
 │                                                     │       │
 │                                           ┌─────────▼─────┐ │
 │                                           │   Локальные   │ │
 │                                           │   заглушки    │ │
+│                                           │   (мок-данные)│ │
 │                                           └───────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -56,60 +76,140 @@
 ## Ключевые модули
 
 ### Frontend
-- **Компоненты** — UI компоненты для всех страниц
-- **Хуки** — `usePlaceholders`, `useAuth`, `useNavigation`, `useProcessing`
-- **Контексты** — глобальное состояние приложения
+- **Страницы** — LoginPage, UploadPage, PreprocessPage, OcrPage, VerifyPage, ReportPage, StatsPage
+- **Компоненты** — UploadComponent, VerifyPage, ReportConstructor, StatisticsComponent, AuthPage, Header, Layout, Navigation, Sidebar, ProgressBar
+- **UI-компоненты** — button, card, progress, stepper (shadcn/ui)
+- **Контексты** — AuthContext, NavigationContext, ProcessingContext
+- **Хуки** — useAuth, useNavigation, usePlaceholders, useProcessing
+- **Утилиты** — csvExport, reportExport, archiveUtils, documentDataAdapter
 
 ### Backend
-- **Placeholders** — модуль заглушек для оффлайн работы
-- **Upload** — загрузка файлов
-- **Preprocess** — предобработка изображений
-- **OCR** — распознавание текста
-- **Attributes** — извлечение атрибутов
-- **Report** — генерация отчётов
-- **Statistics** — статистика обработки
+- **main.py** — главный файл FastAPI приложения
+- **upload.py** — модуль загрузки файлов
+- **preprocess.py** — модуль предобработки изображений
+- **ocr.py** — модуль распознавания текста
+- **attributes.py** — модуль извлечения атрибутов
+- **report.py** — модуль генерации отчётов
+- **stats.py** — модуль статистики обработки
+- **placeholders.py** — модуль заглушек для оффлайн работы
+- **auth_backend.py** — модуль авторизации и аутентификации
+- **image_processing.py** — обработка изображений
+- **attribute_recognition.py** — распознавание атрибутов
 
 ## Структура проекта
 
 ```
-src/
-├── components/
-│   ├── UploadComponent.tsx    # Основной компонент загрузки
-│   └── VerifyPage.tsx        # Компонент верификации результатов
-├── lib/
-│   ├── image_processing.py    # Модуль предобработки изображений
-│   ├── attribute_recognition.py # Модуль атрибутивного распознавания
-│   └── utils.ts              # Утилиты (cn функция для Tailwind)
-├── App.tsx                   # Главный компонент приложения
-├── main.tsx                  # Точка входа
-└── index.css                 # Глобальные стили
-
-documentation/
-├── frontend/                        # Документация фронтенда
-│   ├── README_image_processing.md      # Документация модуля обработки изображений
-│   ├── README_attribute_recognition.md # Документация модуля атрибутивного распознавания
-│   ├── README_verification_module.md   # Документация модуля верификации результатов
-│   ├── README_statistics_component.md  # Документация компонента статистики
-│   └── README_auth.md                  # Документация системы авторизации
-└── backend/                         # Документация бэкенда
-    └── README.md                        # Полная документация Backend API
+mosarchive-intelligent-indexing/
+├── frontend/                         # React приложение
+│   ├── src/
+│   │   ├── components/               # React компоненты
+│   │   │   ├── pages/                # Страницы приложения
+│   │   │   ├── layout/               # Компоненты макета
+│   │   │   ├── ui/                   # UI-компоненты shadcn/ui
+│   │   │   ├── common/               # Общие компоненты
+│   │   │   ├── UploadComponent.tsx   # Основной компонент загрузки
+│   │   │   ├── VerifyPage.tsx        # Компонент верификации
+│   │   │   ├── ReportConstructor.tsx # Конструктор отчетов
+│   │   │   ├── StatisticsComponent.tsx # Компонент статистики
+│   │   │   ├── AuthPage.tsx          # Страница авторизации
+│   │   │   ├── Header.tsx            # Заголовок
+│   │   │   ├── LoginForm.tsx         # Форма входа
+│   │   │   ├── RegisterForm.tsx      # Форма регистрации
+│   │   │   ├── ProtectedRoute.tsx    # Защищенный маршрут
+│   │   │   └── AttributeHighlightedText.tsx # Подсветка атрибутов
+│   │   ├── contexts/                 # React Context
+│   │   │   ├── AuthContext.tsx       # Контекст авторизации
+│   │   │   ├── NavigationContext.tsx # Контекст навигации
+│   │   │   └── ProcessingContext.tsx # Контекст обработки
+│   │   ├── hooks/                    # Пользовательские хуки
+│   │   │   ├── useAuth.ts            # Хук авторизации
+│   │   │   ├── useNavigation.ts      # Хук навигации
+│   │   │   ├── usePlaceholders.ts    # Хук заглушек
+│   │   │   └── useProcessing.ts      # Хук обработки
+│   │   ├── lib/                      # Утилиты и константы
+│   │   │   ├── utils.ts              # Утилиты (cn функция для Tailwind)
+│   │   │   ├── constants.ts          # Константы
+│   │   │   ├── archiveUtils.ts       # Утилиты для архивов
+│   │   │   ├── csvExport.ts          # Экспорт в CSV
+│   │   │   ├── reportExport.ts       # Экспорт отчетов
+│   │   │   ├── documentDataAdapter.ts # Адаптер данных документов
+│   │   │   ├── image_processing.py   # Модуль обработки изображений
+│   │   │   ├── attribute_recognition.py # Модуль распознавания атрибутов
+│   │   │   └── auth_backend.py       # Backend авторизации
+│   │   ├── types/                    # TypeScript типы
+│   │   │   ├── navigation.ts         # Типы навигации
+│   │   │   ├── processing.ts         # Типы обработки
+│   │   │   └── report.ts             # Типы отчетов
+│   │   ├── App.tsx                   # Главный компонент приложения
+│   │   ├── main.tsx                  # Точка входа
+│   │   └── index.css                 # Глобальные стили
+│   ├── package.json                  # Зависимости Node.js
+│   ├── vite.config.ts                # Конфигурация Vite
+│   ├── tailwind.config.js            # Конфигурация Tailwind
+│   ├── tsconfig.json                 # Конфигурация TypeScript
+│   └── Dockerfile                    # Docker образ для фронтенда
+├── backend/                          # Python FastAPI приложение
+│   ├── main.py                       # Главный файл FastAPI
+│   ├── upload.py                     # Модуль загрузки файлов
+│   ├── preprocess.py                 # Модуль предобработки
+│   ├── ocr.py                        # Модуль OCR
+│   ├── attributes.py                 # Модуль атрибутов
+│   ├── report.py                     # Модуль отчетов
+│   ├── stats.py                      # Модуль статистики
+│   ├── placeholders.py               # Модуль заглушек
+│   ├── auth_backend.py               # Модуль авторизации
+│   ├── image_processing.py           # Обработка изображений
+│   ├── attribute_recognition.py      # Распознавание атрибутов
+│   ├── start_backend_full.py         # Скрипт запуска
+│   ├── requirements.txt              # Python зависимости
+│   ├── Dockerfile                    # Docker образ для бэкенда
+│   ├── uploads/                      # Загруженные файлы
+│   ├── processed/                    # Обработанные файлы
+│   ├── ocr_results/                  # Результаты OCR
+│   ├── attribute_results/            # Результаты атрибутов
+│   ├── reports/                      # Сгенерированные отчеты
+│   └── logs/                         # Логи приложения
+├── documentation/                    # Документация проекта
+│   ├── frontend/                     # Документация фронтенда
+│   ├── backend/                      # Документация бэкенда
+│   ├── INSTALLATION.md               # Инструкции по установке
+│   ├── ARCHITECTURE.md               # Архитектура системы
+│   ├── COMPONENTS.md                 # Компоненты
+│   ├── DEVELOPMENT.md                # Разработка
+│   ├── DOCKER.md                     # Docker-инфраструктура
+│   └── UI_ARCHITECTURE.md            # UI-архитектура
+├── docker-compose.yml                # Конфигурация Docker Compose
+├── nginx-mosarchive.conf             # Конфигурация Nginx
+├── setup_public_server.sh            # Скрипт настройки сервера
+└── README.md                         # Главная документация
 ```
 
 ## Особенности реализации
 
-1. **Валидация файлов**: Проверка формата и размера файлов
-2. **Прогресс-бар**: Визуализация процесса загрузки и обработки
-3. **Обработка ошибок**: Понятные сообщения об ошибках
-4. **Верификация результатов**: Интерактивный интерфейс для проверки и редактирования распознанного текста
-5. **Синхронизация состояния**: Автоматическое сохранение изменений между компонентами
-6. **Управление ресурсами**: Оптимизация памяти через автоматическую очистку URL объектов
-7. **Адаптивный дизайн**: Работает на всех устройствах
-8. **Accessibility**: 
-   - Поддержка клавиатурной навигации (Tab, Enter, Пробел, Escape)
+### Frontend
+1. **Многостраничное приложение**: 7 основных страниц с роутингом
+2. **Модульная архитектура**: Разделение на компоненты, контексты, хуки и утилиты
+3. **Система авторизации**: JWT токены, защищенные маршруты
+4. **Drag-and-drop загрузка**: Интуитивный интерфейс загрузки файлов
+5. **Верификация результатов**: Интерактивное редактирование распознанного текста
+6. **Конструктор отчетов**: Гибкая система экспорта в CSV
+7. **Статистика обработки**: Визуализация метрик качества
+8. **Адаптивный дизайн**: Работа на всех устройствах
+9. **Accessibility**: 
    - ARIA-атрибуты для скрин-ридеров
    - Семантическая разметка
    - Focus-индикаторы для кнопок
    - Альтернативный текст для изображений
+
+### Backend
+1. **RESTful API**: Стандартизированные endpoints для всех операций
+2. **Модульная структура**: Независимые модули для каждого этапа обработки
+3. **Система заглушек**: Оффлайн работа с мок-данными
+4. **Валидация данных**: Pydantic модели для валидации
+5. **Логирование**: Подробные логи всех операций
+6. **CORS поддержка**: Кросс-доменные запросы
+7. **JWT аутентификация**: Безопасная авторизация
+8. **Файловое хранилище**: Организованное хранение загруженных и обработанных файлов
 
 ## Модуль заглушек (Placeholders)
 
