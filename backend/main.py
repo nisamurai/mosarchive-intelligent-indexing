@@ -12,8 +12,7 @@ import os
 import sys
 from datetime import datetime
 
-# Добавляем путь к модулям проекта
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'src', 'lib'))
+# Модули теперь находятся в backend директории
 
 # Импортируем все модули
 from upload import router as upload_router
@@ -25,7 +24,7 @@ from stats import router as stats_router
 from placeholders import router as placeholders_router
 
 # Импортируем модуль авторизации
-from auth_backend import app as auth_app, verify_token
+from auth_backend import app as auth_app, verify_token, get_current_user_from_token
 
 # Настройка логирования
 logging.basicConfig(
@@ -58,7 +57,13 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
         "http://127.0.0.1:5175",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "http://85.159.231.195:5173",  # Публичный IP
+        "http://85.159.231.195:5174",
+        "http://85.159.231.195:5175",
+        "http://85.159.231.195:3000",
+        "http://85.159.231.195:80",   # Nginx
+        "http://85.159.231.195",      # Nginx без порта
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -158,6 +163,7 @@ async def root():
     )
 
 @app.get("/health")
+@app.head("/health")
 async def health_check():
     """
     Проверка состояния API
@@ -306,8 +312,29 @@ async def get_api_info():
 
 # Защищенные маршруты (требуют авторизации)
 
+@app.get("/me")
+async def get_current_user_info(current_user: dict = Depends(get_current_user_from_token)):
+    """
+    Получение информации о текущем пользователе
+    
+    Args:
+        current_user: Текущий пользователь (из JWT токена)
+        
+    Returns:
+        JSON с информацией о пользователе
+    """
+    return JSONResponse(
+        status_code=200,
+        content={
+            "username": current_user["username"],
+            "email": current_user["email"],
+            "is_active": current_user["is_active"],
+            "created_at": current_user["created_at"]
+        }
+    )
+
 @app.get("/protected")
-async def protected_route(current_user: str = Depends(verify_token)):
+async def protected_route(current_user: dict = Depends(get_current_user_from_token)):
     """
     Пример защищенного маршрута
     
@@ -328,7 +355,7 @@ async def protected_route(current_user: str = Depends(verify_token)):
     )
 
 @app.get("/admin")
-async def admin_route(current_user: str = Depends(verify_token)):
+async def admin_route(current_user: dict = Depends(get_current_user_from_token)):
     """
     Административный маршрут (пример)
     

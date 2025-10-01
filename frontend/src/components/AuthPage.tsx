@@ -13,7 +13,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://85.159.231.195:8000';
 
   const handleLogin = async (username: string, password: string, rememberMe?: boolean) => {
     setIsLoading(true);
@@ -42,7 +42,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
       // Получаем информацию о пользователе
       const userResponse = await fetch(`${API_BASE_URL}/me`, {
         headers: {
-          'Authorization': `Bearer ${data.token}`,
+          'Authorization': `Bearer ${data.access_token}`,
         },
       });
 
@@ -50,14 +50,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
 
       // Сохраняем токен в зависимости от настройки "запомнить меня"
       if (rememberMe) {
-        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('authToken', data.access_token);
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
       } else {
-        sessionStorage.setItem('authToken', data.token);
+        sessionStorage.setItem('authToken', data.access_token);
         sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
       }
 
-      onAuthSuccess(data.token, userInfo);
+      onAuthSuccess(data.access_token, userInfo);
     } catch (err) {
       console.error('Ошибка входа:', err);
       setError(err instanceof Error ? err.message : 'Произошла ошибка при входе');
@@ -94,20 +94,35 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
         throw new Error(data.detail || 'Ошибка регистрации');
       }
 
+      // После успешной регистрации автоматически входим в систему
+      const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!loginResponse.ok) {
+        throw new Error('Ошибка автоматического входа после регистрации');
+      }
+
+      const loginData = await loginResponse.json();
+
       // Получаем информацию о пользователе
       const userResponse = await fetch(`${API_BASE_URL}/me`, {
         headers: {
-          'Authorization': `Bearer ${data.token}`,
+          'Authorization': `Bearer ${loginData.access_token}`,
         },
       });
 
       const userInfo = await userResponse.json();
 
       // При регистрации всегда сохраняем в localStorage (по умолчанию "запомнить меня")
-      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('authToken', loginData.access_token);
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
 
-      onAuthSuccess(data.token, userInfo);
+      onAuthSuccess(loginData.access_token, userInfo);
     } catch (err) {
       console.error('Ошибка регистрации:', err);
       setError(err instanceof Error ? err.message : 'Произошла ошибка при регистрации');

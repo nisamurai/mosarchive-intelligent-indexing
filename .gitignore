@@ -5,3 +5,4 @@ Functional_requirements.pdf
 src/lib/__pycache__/
 frontend/src/lib/__pycache__/
 frontend/dist/
+backend/__pycache__/

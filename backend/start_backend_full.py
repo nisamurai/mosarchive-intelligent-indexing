@@ -8,9 +8,7 @@ import uvicorn
 import sys
 import os
 
-# Добавляем путь к модулям проекта
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend', 'src', 'lib'))
+# Модули теперь находятся в backend директории
 
 if __name__ == "__main__":
     print("=" * 80)

@@ -32,7 +32,10 @@ const OcrPage: React.FC = () => {
         const currentFileIndex = Math.floor(prev / (100 / files.length));
         if (currentFileIndex < files.length) {
           const sampleText = `Распознанный текст из документа ${files[currentFileIndex].file.name}:\n\nЭто пример распознанного текста. Здесь может быть любой контент, извлеченный из изображения документа.\n\nДата: ${new Date().toLocaleDateString()}\nНомер документа: DOC-${currentFileIndex + 1}\nСтатус: Обработан`;
-          updateFileText(files[currentFileIndex].file.name, sampleText);
+          // Используем setTimeout для отложенного обновления состояния
+          setTimeout(() => {
+            updateFileText(files[currentFileIndex].file.name, sampleText);
+          }, 0);
         }
         
         return prev + 10;

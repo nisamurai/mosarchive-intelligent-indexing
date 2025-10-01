@@ -4,7 +4,7 @@
 
 ## Технологический стек
 
-- **Frontend**: React 19 + TypeScript
+- **Frontend**: React 18 + TypeScript
 - **Сборщик**: Vite
 - **Пакетный менеджер**: Bun
 - **Стили**: Tailwind CSS
@@ -18,125 +18,37 @@
 ```
 src/
 ├── components/
-│   ├── ui/                    # UI-компоненты из shadcn/ui
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── progress.tsx
-│   │   └── stepper.tsx
+│   ├── ui/                    # UI-компоненты shadcn/ui
 │   ├── layout/                # Компоненты макета
-│   │   ├── Header.tsx
-│   │   ├── Sidebar.tsx
-│   │   ├── Layout.tsx
-│   │   ├── ProgressBar.tsx
-│   │   └── Navigation.tsx
 │   ├── pages/                 # Страницы приложения
-│   │   ├── UploadPage.tsx
-│   │   ├── PreprocessPage.tsx
-│   │   ├── OcrPage.tsx
-│   │   ├── VerifyPage.tsx
-│   │   ├── ReportPage.tsx
-│   │   ├── StatsPage.tsx
-│   │   └── LoginPage.tsx
 │   └── common/                # Общие компоненты
-│       ├── FileUpload.tsx
-│       ├── DocumentViewer.tsx
-│       └── TextEditor.tsx
-├── contexts/
-│   ├── AuthContext.tsx
-│   ├── NavigationContext.tsx  # Контекст для навигации
-│   └── ProcessingContext.tsx  # Контекст для состояния обработки
-├── hooks/
-│   ├── useAuth.ts
-│   ├── useNavigation.ts
-│   └── useProcessing.ts
-├── lib/
-│   ├── utils.ts
-│   ├── constants.ts
-│   └── api.ts
-├── types/
-│   ├── auth.ts
-│   ├── navigation.ts
-│   └── processing.ts
-└── App.tsx
+├── contexts/                  # React Context
+├── hooks/                     # Пользовательские хуки
+├── lib/                       # Утилиты и константы
+├── types/                     # TypeScript типы
+└── App.tsx                    # Главный компонент
 ```
 
 ## Этапы обработки документов
 
-### 1. Загрузка (UploadPage)
-- **Путь**: `/upload`
-- **Функциональность**: Загрузка документов через drag-and-drop
-- **Компоненты**: UploadComponent, ProgressBar
-- **Состояние**: Список загруженных файлов
+### Основные страницы
 
-### 2. Предобработка (PreprocessPage)
-- **Путь**: `/preprocess`
-- **Функциональность**: Настройка параметров предобработки изображений
-- **Компоненты**: Stepper, Card, Button
-- **Состояние**: Параметры обработки
-
-### 3. OCR (OcrPage)
-- **Путь**: `/ocr`
-- **Функциональность**: Распознавание текста из изображений
-- **Компоненты**: Progress, Card, Button
-- **Состояние**: Прогресс обработки
-
-### 4. Верификация (VerifyPage)
-- **Путь**: `/verify`
-- **Функциональность**: Проверка и редактирование распознанного текста
-- **Компоненты**: TextEditor, DocumentViewer
-- **Состояние**: Отредактированный текст
-
-### 5. Отчёт (ReportPage)
-- **Путь**: `/report`
-- **Функциональность**: Генерация отчётов в различных форматах
-- **Компоненты**: Card, Button, FileDownload
-- **Состояние**: Настройки отчёта
-
-### 6. Статистика (StatsPage)
-- **Путь**: `/statistics`
-- **Функциональность**: Анализ результатов обработки
-- **Компоненты**: Charts, Statistics
-- **Состояние**: Метрики качества
-
-### 7. Авторизация (LoginPage)
-- **Путь**: `/login`
-- **Функциональность**: Вход в систему
-- **Компоненты**: LoginForm, RegisterForm
-- **Состояние**: Токен авторизации
+1. **Загрузка** (`/upload`) - Загрузка документов через drag-and-drop
+2. **Предобработка** (`/preprocess`) - Настройка параметров обработки
+3. **OCR** (`/ocr`) - Распознавание текста из изображений
+4. **Верификация** (`/verify`) - Проверка и редактирование текста
+5. **Отчёт** (`/report`) - Генерация отчётов в различных форматах
+6. **Статистика** (`/statistics`) - Анализ результатов обработки
+7. **Авторизация** (`/login`) - Вход в систему
 
 ## Система навигации
 
-### React Router конфигурация
+### Навигация
 
-```tsx
-<Routes>
-  <Route path="/login" element={<LoginPage />} />
-  <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
-  <Route path="/preprocess" element={<ProtectedRoute><PreprocessPage /></ProtectedRoute>} />
-  <Route path="/ocr" element={<ProtectedRoute><OcrPage /></ProtectedRoute>} />
-  <Route path="/verify" element={<ProtectedRoute><VerifyPage /></ProtectedRoute>} />
-  <Route path="/report" element={<ProtectedRoute><ReportPage /></ProtectedRoute>} />
-  <Route path="/statistics" element={<ProtectedRoute><StatsPage /></ProtectedRoute>} />
-</Routes>
-```
-
-### Компонент Stepper
-
-Отображает прогресс обработки с визуальными индикаторами:
-
-```tsx
-<Stepper
-  currentStep={navigationState.currentStep}
-  completedSteps={navigationState.completedSteps}
-  steps={steps}
-/>
-```
-
-### Навигация между этапами
-
-- **Кнопки "Вперед/Назад"**: Автоматическое управление доступностью
-- **Боковая панель**: Быстрый переход к любому доступному этапу
-- **Прогресс-бар**: Визуализация текущего состояния
+- **React Router** для маршрутизации между страницами
+- **ProtectedRoute** для защиты страниц от неавторизованного доступа
+- **Stepper** для отображения прогресса обработки
+- **Боковая панель** для быстрого перехода между этапами
 
 ## UI/UX особенности
 
@@ -176,4 +88,4 @@ src/
 
 ## Конфигурация bun
 
-Смотреть в **[package.json](frontend/package.json)**
+Смотреть в **[../frontend/package.json](../frontend/package.json)**

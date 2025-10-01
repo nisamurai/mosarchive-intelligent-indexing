@@ -24,7 +24,7 @@ mosarchive-intelligent-indexing/
 │   ├── requirements.txt     # Python зависимости
 │   └── *.py                 # Исходный код Python
 ├── docker-compose.yml       # Конфигурация всех сервисов
-└── README_DOCKER.md         # Этот файл
+└── DOCKER.md                # Этот файл
 ```
 
 ## Требования

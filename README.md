@@ -1,17 +1,61 @@
 # MosArchive Intelligent Indexing
 
-Веб-сервис с применением средств искусственного интеллекта для автоматизированного извлечения данных из образов архивных документов, их индексирования и наполнения базы данных.
+### Веб-сервис с применением средств искусственного интеллекта для автоматизированного извлечения данных из образов архивных документов, их индексирования и наполнения базы данных.
 
-**Кроссплатформенное решение** - поддерживается работа на Windows и Linux.
+> Наше решение уже доступно по адресу: http://85.159.231.195
+
+ Вы можете подключиться и ознакомиться с функционалом приложения, используя следующую тестовую учётную запись:
+```
+L: user
+P: user123
+```
+ > Обратите внимание, что **настройка сертификата для HTTPS пока не завершена**, поэтому браузер может выдавать предупреждения при подключении. Это **нормально**, и Вы можете **безопасно** продолжать использовать приложение.
 
 <div align="center">
-  <img src="resources/screen1.png" alt="Screenshot 1" width="45%" style="margin-right: 2%;">
-  <img src="resources/screen2.png" alt="Screenshot 2" width="45%">
+  <img src="resources/1.png" alt="Screenshot 1" width="40%"
+    style="margin-right: 1%; margin-bottom: 1%;">
+  <img src="resources/3.png" alt="Screenshot 2" width="40%" 
+    style="margin-bottom: 1%;">
 </div>
+<div align="center">
+  <img src="resources/7.png" alt="Screenshot 7" width="40%"
+    style="margin-right: 1%; margin-bottom: 1%;">
+  <img src="resources/12.png" alt="Screenshot 2" width="40%" 
+    style="margin-bottom: 1%;">
+</div>
+<div align="center">
+  <img src="resources/19.png" alt="Screenshot 1" width="40%"
+    style="margin-right: 1%; margin-bottom: 1%;">
+  <img src="resources/25.png" alt="Screenshot 2" width="40%" 
+    style="margin-bottom: 1%;">
+</div>
+
+### Краткое описание
+
+- Веб-сервис с применением средств искусственного интеллекта для автоматизированного извлечения данных из образов архивных документов, их индексирования и наполнения базы данных.
+
+ - Возможность ручной загрузки документов, запуска алгоритмов предобработки изображений и алгоритмов распознавания текста.
+
+  - Наличие этапа верификации для оценки правильности распознования текста с функцией ручной правки и возможностью цветного отображения распознонных атрибутов прямо в тексте.
+
+ - Конструктор отчёта предоставляет гибкую систему для экспорта данных обработанных документов:
+
+    -  **Выбор полей** из 13+ доступных вариантов
+    - **Готовые шаблоны** для быстрого создания отчётов
+    - **Предварительный просмотр** структуры данных
+    - **Экспорт в CSV** с корректной кодировкой для Excel
+    - **Статистика** по экспортируемым данным
+    - **Расширяемость** новыми полями и шаблонами
+
+## Особенности разработки
+
+**Кроссплатформенное решение** - поддерживается сборка на Windows и Linux.
+
+**Документация** - Код проекта содержит подробные комментарии для быстрого погружения в суть реализации. Детально проработана документация каждого отдельного модуля с инструкциями по интеграции новых технологий.
 
 ## Технологии
 
-- **Frontend**: React 19 + TypeScript
+- **Frontend**: React 18 + TypeScript
 - **Backend**: Python + FastAPI
 - **Сборщик**: Vite
 - **Стили**: Tailwind CSS
@@ -22,40 +66,23 @@
 
 ## Быстрый старт
 
-### Установка Bun
+Подробные инструкции по установке и запуску см. в [INSTALLATION.md](documentation/INSTALLATION.md)
 
+1. **Установка зависимостей:**
 ```bash
-# Windows (PowerShell)
-irm bun.sh/install.ps1 | iex
-
-# macOS/Linux
-curl -fsSL https://bun.sh/install | bash
-```
-
-### Установка зависимостей
-
-1. **Frontend зависимости:**
-```bash
-bun upgrade
-bun update
+# Frontend
 bun install
-```
 
-2. **Backend зависимости (Python 3.8+):**
-```bash
-python -m pip install --upgrade pip
+# Backend
 pip install -r requirements.txt
 ```
 
-### Запуск приложения
-
-1. **Backend API:**
+2. **Запуск:**
 ```bash
+# Backend (терминал 1)
 python start_backend_full.py
-```
 
-2. **Frontend (в другом терминале):**
-```bash
+# Frontend (терминал 2)
 bunx vite
 ```
 
@@ -69,10 +96,10 @@ documentation/
 ├── ARCHITECTURE.md          # Архитектура системы
 ├── COMPONENTS.md            # Компоненты
 ├── DEVELOPMENT.md           # Разработка
-├── DOCKER.md               # Docker-инфраструктура
-├── UI_ARCHITECTURE.md      # UI-архитектура
-├── frontend/               # Frontend модули
-└── backend/                # Backend модули
+├── DOCKER.md                # Docker-инфраструктура
+├── UI_ARCHITECTURE.md       # UI-архитектура
+├── frontend/                # Frontend модули
+└── backend/                 # Backend модули
 ```
 
 ### Основные разделы

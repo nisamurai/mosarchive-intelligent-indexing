@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://85.159.231.195:8000';
 
   // Проверка авторизации при загрузке приложения
   useEffect(() => {
