@@ -4,6 +4,8 @@
 
 Компонент `StatisticsComponent` предназначен для отображения статистики обработки документов в системе автоматического распознавания и индексирования архивных документов.
 
+> В данной реализации показывает лишь общую статистику по загруженным документам. Ниже описана рекомендация и дальнейшие планы по расширению блока сбора и отображения статистики.
+
 ## Основные метрики
 
 ### 1. Обработано документов (processed_count)
@@ -18,17 +20,6 @@
 - **Источник**: Поле `confidence` в результатах распознавания
 - **Расчет**: Среднее арифметическое всех уровней уверенности распознавания
 
-```sql
--- Пример SQL запроса для расчета средней уверенности
-SELECT AVG(confidence) as avg_confidence 
-FROM recognition_results 
-WHERE document_id IN (
-    SELECT id FROM processed_documents 
-    WHERE status = 'completed' 
-    AND created_at >= :start_date 
-    AND created_at <= :end_date
-);
-```
 
 ### 3. Низкая уверенность (low_confidence_count)
 - **Описание**: Количество элементов с низким уровнем уверенности распознавания
@@ -36,16 +27,7 @@ WHERE document_id IN (
 - **Порог**: confidence < 0.7 (70%)
 - **Расчет**: Подсчет элементов с уровнем уверенности ниже порогового значения
 
-```sql
--- Пример SQL запроса для подсчета элементов с низкой уверенностью
-SELECT COUNT(*) as low_confidence_count
-FROM recognition_results 
-WHERE confidence < 0.7
-AND document_id IN (
-    SELECT id FROM processed_documents 
-    WHERE status = 'completed'
-);
-```
+
 
 ### 4. Среднее время обработки (processing_time_avg)
 - **Описание**: Среднее время обработки одного документа в секундах
@@ -53,15 +35,6 @@ AND document_id IN (
 - **Источник**: Поля `started_at` и `completed_at` в таблице `processing_logs`
 - **Расчет**: Среднее время между началом и завершением обработки
 
-```sql
--- Пример SQL запроса для расчета среднего времени обработки
-SELECT AVG(
-    EXTRACT(EPOCH FROM (completed_at - started_at))
-) as processing_time_avg
-FROM processing_logs 
-WHERE status = 'completed'
-AND completed_at IS NOT NULL;
-```
 
 ## Дополнительные метрики
 
@@ -230,85 +203,3 @@ const fetchFilteredStatistics = async (filters: StatisticsFilters): Promise<Proc
   // ... остальные дни
 ]
 ```
-
-## Производительность
-
-### Оптимизация запросов
-- Используйте индексы на полях `created_at`, `status`, `confidence`
-- Кэшируйте результаты на уровне базы данных
-- Ограничивайте период выборки данных
-
-### Мониторинг
-- Отслеживайте время выполнения запросов
-- Логируйте ошибки API
-- Мониторьте использование памяти
-
-## Безопасность
-
-### Аутентификация
-- Требуйте аутентификации для доступа к статистике
-- Используйте JWT токены или сессии
-
-### Авторизация
-- Проверяйте права доступа пользователя
-- Ограничивайте доступ к чувствительным данным
-
-### Валидация
-- Валидируйте входные параметры
-- Санитизируйте данные перед отображением
-
-## Тестирование
-
-### Unit тесты
-```typescript
-describe('StatisticsComponent', () => {
-  it('should display correct statistics', () => {
-    const mockStats = {
-      processed_count: 100,
-      avg_confidence: 0.85,
-      low_confidence_count: 5,
-      // ... остальные поля
-    };
-    
-    render(<StatisticsComponent />);
-    expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('85%')).toBeInTheDocument();
-  });
-});
-```
-
-### Integration тесты
-- Тестируйте API endpoints
-- Проверяйте корректность расчетов
-- Тестируйте обработку ошибок
-
-## Развертывание
-
-### Переменные окружения
-```env
-STATISTICS_CACHE_TTL=300000
-STATISTICS_API_BASE_URL=https://api.example.com
-STATISTICS_REFRESH_INTERVAL=30000
-```
-
-### Конфигурация
-- Настройте CORS для API
-- Настройте rate limiting
-- Настройте мониторинг и логирование
-
-## Поддержка и обслуживание
-
-### Логирование
-- Логируйте все API вызовы
-- Отслеживайте производительность
-- Мониторьте ошибки
-
-### Обновления
-- Регулярно обновляйте зависимости
-- Мониторьте безопасность
-- Тестируйте изменения
-
-### Резервное копирование
-- Регулярно создавайте резервные копии данных
-- Тестируйте процедуры восстановления
-- Документируйте процессы
