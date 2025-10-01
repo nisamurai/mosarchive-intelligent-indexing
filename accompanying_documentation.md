@@ -272,7 +272,7 @@ mosarchive-intelligent-indexing/
 ### 2.2 Технологический стек
 
 **Frontend:**
-- React 18 + TypeScript
+- React 19 + TypeScript
 - Vite (сборщик)
 - Tailwind CSS (стилизация)
 - shadcn/ui + Radix UI (UI-компоненты)
@@ -521,7 +521,7 @@ const validateText = (original: string, edited: string): TextValidationInfo => {
 ### 4.1 Готовые реализации
 
 **Frontend библиотеки:**
-- **React 18**: https://react.dev/ - библиотека для создания пользовательских интерфейсов
+- **React 19**: https://react.dev/ - библиотека для создания пользовательских интерфейсов
 - **TypeScript**: https://www.typescriptlang.org/ - типизированный JavaScript
 - **Tailwind CSS**: https://tailwindcss.com/ - utility-first CSS фреймворк
 - **shadcn/ui**: https://ui.shadcn.com/ - компоненты на основе Radix UI

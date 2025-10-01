@@ -8,7 +8,7 @@
 
 ## Технологический стек
 
-- **Frontend**: React 18 + TypeScript
+- **Frontend**: React 19 + TypeScript
 - **Backend**: Python + FastAPI
 - **Сборщик**: Vite
 - **Стили**: Tailwind CSS
